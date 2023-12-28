@@ -11,6 +11,10 @@ import {
 import { usePathname } from 'next/navigation';
 import React from 'react';
 import FeedCard from '@/components/FeedCard';
+import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
+import toast from 'react-hot-toast';
+import { GraphQL } from '@/client/api';
+import { getUserGoogleToken } from '@/graphql/query/user';
 
 interface SidebarMenuInterface {
   title: string;
@@ -46,6 +50,19 @@ const sideBarMenuButtons: SidebarMenuInterface[] = [
 
 export default function Home() {
   const pathName = usePathname();
+
+  const handleGoogleLogin = async (credentialResponse: CredentialResponse) => {
+    const token = credentialResponse.credential;
+
+    if (!token) return toast.error('Something went wrong');
+
+    const { verifyGoogleToken } = await GraphQL.request(getUserGoogleToken, {
+      token,
+    });
+
+    console.log(verifyGoogleToken);
+    toast.success('Logged in successfully');
+  };
   return (
     <main className="grid grid-cols-[1fr_2fr_1fr] grid-rows-1 h-screen container">
       <section className="py-4 transition-all">
@@ -89,7 +106,20 @@ export default function Home() {
         <FeedCard />
         <FeedCard />
       </section>
-      <section className=""></section>
+      <section className="p-5">
+        <div className="p-4 w-full border-[1px] border-gray-500 rounded">
+          <h5 className="font-bold">New To Hashtag?</h5>
+          <p className="text-gray-400 text-xs mb-4">
+            Sign up with Google to get started.
+          </p>
+          <GoogleLogin
+            onSuccess={handleGoogleLogin}
+            onError={() => {
+              console.log('Login Failed');
+            }}
+          />
+        </div>
+      </section>
     </main>
   );
 }
