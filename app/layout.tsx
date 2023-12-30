@@ -4,9 +4,12 @@
 import { Inter } from 'next/font/google';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Toaster } from 'react-hot-toast';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import './globals.css';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const inter = Inter({ subsets: ['latin'] });
+const queryClient = new QueryClient();
 
 // export const metadata: Metadata = {
 //   title: 'Create Next App',
@@ -20,12 +23,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <GoogleOAuthProvider clientId="315498993260-0v30d4ekfk696ldacrhgcrg85qt8rd5a.apps.googleusercontent.com">
-        <body className={inter.className}>
-          {children}
-          <Toaster />
-        </body>
-      </GoogleOAuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <GoogleOAuthProvider clientId="315498993260-0v30d4ekfk696ldacrhgcrg85qt8rd5a.apps.googleusercontent.com">
+          <body className={inter.className}>
+            {children}
+            <Toaster /> <ReactQueryDevtools initialIsOpen={false} />
+          </body>
+        </GoogleOAuthProvider>
+      </QueryClientProvider>
     </html>
   );
 }
