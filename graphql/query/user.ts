@@ -20,3 +20,17 @@ export const getUserInfoQuery = graphql(`
     }
   }
 `);
+
+export const getUserByNameQuery = graphql(`
+    #graphql
+    query GetUserByName($userName: String!) {
+  getUserByName(userName: $userName) {
+    id
+    firstName
+    lastName
+    userName
+    email
+    profilePicUrl
+  }
+}
+`);

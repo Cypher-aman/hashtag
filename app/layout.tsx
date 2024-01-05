@@ -7,6 +7,7 @@ import { Toaster } from 'react-hot-toast';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import './globals.css';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import HashtagLayout from '@/components/Layouts/HashtagLayout';
 
 const inter = Inter({ subsets: ['latin'] });
 const queryClient = new QueryClient();
@@ -26,7 +27,7 @@ export default function RootLayout({
       <QueryClientProvider client={queryClient}>
         <GoogleOAuthProvider clientId="315498993260-0v30d4ekfk696ldacrhgcrg85qt8rd5a.apps.googleusercontent.com">
           <body className={inter.className}>
-            {children}
+            <HashtagLayout>{children}</HashtagLayout>
             <Toaster /> <ReactQueryDevtools initialIsOpen={false} />
           </body>
         </GoogleOAuthProvider>

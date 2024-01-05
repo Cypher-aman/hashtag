@@ -1,5 +1,5 @@
 export const formatTimestamp = (timestamp: any) => {
-  const targetDate = timestamp;
+  const targetDate: any = new Date(timestamp);
   const now: any = new Date();
   const timeDifference = now - targetDate;
   const days = Math.floor(timeDifference / (24 * 60 * 60 * 1000));
@@ -20,8 +20,12 @@ export const formatTimestamp = (timestamp: any) => {
     return `${seconds} ${seconds === 1 ? 'sec' : 'sec'}`;
   } else {
     // More than 24 hours ago
-    const options = { day: 'numeric', month: 'short' };
+    const options = { month: 'short', day: 'numeric' };
     const formattedDate = targetDate.toLocaleDateString('en-US', options);
     return `${formattedDate}`;
   }
+};
+
+export const countRemainingChar = (text: string, limit: number) => {
+  return limit - text.length;
 };

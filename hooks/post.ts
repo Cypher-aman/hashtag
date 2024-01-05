@@ -1,7 +1,8 @@
 import { GraphQL } from '@/client/api';
-import { CreatePostInput } from '@/gql/graphql';
+import { CreatePostInput, Post } from '@/gql/graphql';
 import { createPostMutation } from '@/graphql/mutation/post';
 import { getAllPostsQuery } from '@/graphql/query/post';
+import { getUserPostsQuery } from '@/graphql/query/post';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 
@@ -30,4 +31,14 @@ export const useCreatePost = () => {
   });
 
   return mutation;
+};
+
+export const useUserPosts = (userName: string, userId: string) => {
+  const { status, data, isFetching } = useQuery({
+    queryKey: ['user_posts', userName],
+    queryFn: async () => await GraphQL.request(getUserPostsQuery, { userName }),
+    enabled: !!userId,
+  });
+
+  return { status, isFetching, posts: (data?.getUserPosts as Post[]) || [] };
 };

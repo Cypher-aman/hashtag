@@ -1,197 +1,165 @@
 'use client';
 
-import { FaHashtag, FaRegUser } from 'react-icons/fa6';
-import { BiSolidHome } from 'react-icons/bi';
-import { HiOutlineEnvelope } from 'react-icons/hi2';
-import {
-  IoSearchOutline,
-  IoNotificationsOutline,
-  IoBookmarkOutline,
-} from 'react-icons/io5';
-import { usePathname } from 'next/navigation';
 import React, { useCallback } from 'react';
 import FeedCard from '@/components/FeedCard';
-import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
-import toast from 'react-hot-toast';
-import { GraphQL } from '@/client/api';
-import { getUserGoogleToken } from '@/graphql/query/user';
 import { useGetUser } from '@/hooks/user';
-import { useQueryClient } from '@tanstack/react-query';
-import Image from 'next/image';
-import { PostInterface, SidebarMenuInterface } from '@/utils/interfaces';
+import { PostInterface } from '@/utils/interfaces';
 import { useCreatePost, useGetAllPosts } from '@/hooks/post';
 import { Post } from '@/gql/graphql';
-
-const sideBarMenuButtons: SidebarMenuInterface[] = [
-  {
-    title: 'Home',
-    icon: <BiSolidHome />,
-  },
-  {
-    title: 'Explore',
-    icon: <IoSearchOutline />,
-  },
-  {
-    title: 'Notifications',
-    icon: <IoNotificationsOutline />,
-  },
-  {
-    title: 'Messages',
-    icon: <HiOutlineEnvelope />,
-  },
-  {
-    title: 'Bookmarks',
-    icon: <IoBookmarkOutline />,
-  },
-  {
-    title: 'Profile',
-    icon: <FaRegUser />,
-  },
-];
+import UserProfileImage from '@/components/UserProfileImage';
+import { IoImageOutline } from 'react-icons/io5';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import { GraphQL } from '@/client/api';
+import { getPresignerURLQuery } from '@/graphql/query/post';
+import Image from 'next/image';
+import { countRemainingChar } from '@/utils/helper';
+import { IoCloseOutline } from 'react-icons/io5';
 
 export default function Home() {
-  const pathName = usePathname();
   const { user } = useGetUser();
-  const queryClient = useQueryClient();
   const [postContent, setPostContent] = React.useState<PostInterface>({
     content: '',
     imageUrl: '',
   });
+  const [textAreaRows, setTextAreaRows] = React.useState('');
   const { posts = [] } = useGetAllPosts();
   const { mutate } = useCreatePost();
 
   const handlePostSubmit = useCallback(async () => {
     if (!postContent.content) return;
     mutate(postContent);
-    setPostContent({ content: '', imageUrl: '' });
+    setPostContent({
+      content: '',
+      imageUrl: '',
+    });
   }, [postContent, mutate]);
 
-  const handleGoogleLogin = async (credentialResponse: CredentialResponse) => {
-    const token = credentialResponse.credential;
-
-    if (!token) return toast.error('Something went wrong');
-
+  const handleImageUpload = async (file: File) => {
     try {
-      const { verifyGoogleToken } = await GraphQL.request(getUserGoogleToken, {
-        token,
+      toast.loading('Uploading image...', { id: '2' });
+      const { getPresignerURL } = await GraphQL.request(getPresignerURLQuery, {
+        imageType: file.type,
+        imageName: file.name,
       });
 
-      window.localStorage.setItem('__hashtag_token', verifyGoogleToken);
-      await queryClient.invalidateQueries({ queryKey: ['user_info'] });
-      toast.success('Logged in successfully');
-    } catch (error: any) {
-      console.log(error.message);
-      toast.error('Something went wrong');
+      if (!getPresignerURL) throw new Error('Failed to upload image');
+
+      await axios.put(getPresignerURL, file, {
+        headers: {
+          'Content-Type': file.type,
+        },
+      });
+      toast.success('Image uploaded successfully', { id: '2' });
+      const imageUrl = getPresignerURL.split('?')[0];
+
+      setPostContent((prevState) => ({
+        ...prevState,
+        imageUrl: imageUrl,
+      }));
+    } catch (error) {
+      toast.error('Failed to upload image', { id: '2' });
     }
   };
+
+  const handleImageSubmit = useCallback(() => {
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute(
+      'accept',
+      'image/png, image/jpeg, image/jpg, image/webp'
+    );
+
+    input.addEventListener('change', (e) => {
+      e.preventDefault();
+      const selectedFile = (input as HTMLInputElement).files?.[0];
+      if (!selectedFile) return;
+      handleImageUpload(selectedFile);
+    });
+    input.click();
+  }, []);
+
+  const handleTextAreaInput = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const newText = e.target.value;
+
+      setPostContent((prevState) => ({
+        ...prevState,
+        content: newText,
+      }));
+
+      const textAreaHeight = e.target.scrollHeight;
+      if (newText.length === 0) setTextAreaRows('fit-content');
+      else setTextAreaRows(`${textAreaHeight}px`);
+    },
+    []
+  );
+
   return (
-    <main className="grid grid-cols-[1fr_2fr_1fr] grid-rows-1 h-screen container">
-      <section className="py-4 transition-all relative">
-        <div className="text-3xl p-2 ml-2 hover:bg-gray-700 rounded-full w-fit cursor-pointer">
-          <FaHashtag className="rotate-12" />
+    <React.Fragment>
+      <div className="flex justify-start py-4 px-3 gap-2">
+        <div className="w-[40px]">
+          <UserProfileImage
+            src={user?.profilePicUrl}
+            userName={user?.userName!}
+          />
         </div>
-        <div className="mt-5">
-          <ul>
-            {sideBarMenuButtons.map((el, index) => {
-              return (
-                <li
-                  key={index}
-                  className="mb-2 p-2 px-4 w-fit rounded-full flex gap-4 items-center cursor-pointer hover:bg-gray-700"
-                >
-                  <span className="text-2xl">{el.icon}</span>
-                  <span
-                    className={`${index === 0 ? 'font-semibold' : ''} text-xl`}
-                  >
-                    {el.title}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-          <div className="px-2 pr-6">
-            {' '}
-            <button className="text-xl rounded-full bg-purple-600 hover:bg-purple-500 cursor-pointer py-3 mt-5 w-full">
+
+        <div className="w-full flex flex-col h-max px-2">
+          <textarea
+            className="hide-scrollbar w-full h-auto bg-transparent focus:outline-none resize-none mb-2"
+            style={{ height: textAreaRows }}
+            placeholder="What's happening?"
+            rows={3}
+            value={postContent.content}
+            onChange={(e) => handleTextAreaInput(e)}
+          ></textarea>
+          {postContent.imageUrl && (
+            <div className="relative w-full overflow-hidden rounded h-[200px] max-w-[400px] max-h-[400px] mb-2">
+              <Image
+                src={postContent.imageUrl}
+                fill
+                objectFit="cover"
+                alt="Uploaded image"
+              />
+              <button
+                onClick={() => setPostContent({ ...postContent, imageUrl: '' })}
+                className="text-xl p-2 rounded-full bg-gray-700 absolute text-white top-3 right-3"
+              >
+                <IoCloseOutline />
+              </button>
+            </div>
+          )}
+          <span
+            className={`inline-block text-right text-sm border-b-[1px] border-gray-700 w-full ${
+              countRemainingChar(postContent.content, 240) < 0
+                ? 'text-red-600'
+                : 'text-gray-400'
+            }`}
+          >
+            {countRemainingChar(postContent.content, 240)}
+          </span>
+          <div className="flex justify-between items-center mt-2">
+            <div className="flex itcems-center gap-3 text-xl text-purple-200">
+              <button onClick={handleImageSubmit}>
+                <IoImageOutline />
+              </button>
+            </div>
+            <button
+              onClick={handlePostSubmit}
+              disabled={
+                !postContent.content ||
+                countRemainingChar(postContent.content, 240) < 0
+              }
+              className="text-base rounded-full bg-purple-600 hover:bg-purple-500 cursor-pointer px-4 py-1 w-fit disabled:cursor-not-allowed disabled:bg-purple-400 disabled:hover:bg-purple-400 "
+            >
               Post
             </button>
           </div>
         </div>
-        {user && (
-          <div className="flex absolute bottom-5 items-center w-fit gap-2 py-2 px-3 hover:bg-[#e7e9ea1a] rounded-full">
-            {user.profilePicUrl && (
-              <Image
-                className="rounded-full"
-                alt="user-image"
-                src={user.profilePicUrl}
-                height={40}
-                width={40}
-              />
-            )}
-            <div>
-              {' '}
-              <p className="text-base font-semibold hover:underline cursor-pointer">
-                {user.firstName + ' ' + (user.lastName || '')}
-              </p>
-              <p className="text-gray-400 text-sm">@{user.userName}</p>
-            </div>
-          </div>
-        )}
-      </section>
-      <section className="hide-scrollbar border-l-[1px] border-r-[1px] border-gray-500 overflow-y-scroll">
-        <div className="">
-          <div className="flex justify-start p-4 gap-2">
-            <div className="w-[40px]">
-              {user?.profilePicUrl && (
-                <Image
-                  className="rounded-full"
-                  alt="user-image"
-                  src={user.profilePicUrl}
-                  height={40}
-                  width={40}
-                />
-              )}
-            </div>
-
-            <div className="w-full px-2">
-              <textarea
-                className="w-full bg-transparent focus:outline-none border-b-[1px] border-gray-700 resize-none"
-                placeholder="What's happening?"
-                rows={3}
-                value={postContent.content}
-                onChange={(e) => {
-                  setPostContent({ ...postContent, content: e.target.value });
-                }}
-              ></textarea>
-              <div className="flex justify-end mt-2">
-                <button
-                  onClick={handlePostSubmit}
-                  disabled={!postContent.content}
-                  className="text-base rounded-full bg-purple-600 hover:bg-purple-500 cursor-pointer px-6 py-2 w-fit disabled:cursor-not-allowed disabled:bg-purple-400 disabled:hover:bg-purple-400 "
-                >
-                  Post
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        {posts &&
-          posts?.map((post) => <FeedCard key={post?.id} {...(post as Post)} />)}
-      </section>
-      <section className="p-5">
-        {!user?.id && (
-          <div className="p-4 w-full border-[1px] border-gray-500 rounded">
-            <h5 className="font-bold">New To Hashtag?</h5>
-            <p className="text-gray-400 text-xs mb-4">
-              Sign up with Google to get started.
-            </p>
-            <GoogleLogin
-              onSuccess={handleGoogleLogin}
-              onError={() => {
-                console.log('Login Failed');
-              }}
-            />
-          </div>
-        )}
-      </section>
-    </main>
+      </div>
+      {posts &&
+        posts?.map((post) => <FeedCard key={post?.id} {...(post as Post)} />)}
+    </React.Fragment>
   );
 }

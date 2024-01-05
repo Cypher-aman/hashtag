@@ -13,6 +13,7 @@
     "@react-oauth/google": "^0.12.1",
     "@tanstack/react-query": "^5.15.3",
     "@tanstack/react-query-devtools": "^5.15.3",
+    "axios": "^1.6.4",
     "encoding": "^0.1.13",
     "graphql-request": "^6.1.0",
     "next": "13.5.6",
