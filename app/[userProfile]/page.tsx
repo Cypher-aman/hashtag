@@ -5,13 +5,15 @@ import Image from 'next/image';
 import UserCoverPlaceholder from '@/assets/images/twitter-cover.jpg';
 import UserProfilePlaceholder from '@/assets/images/user-avatar.jpg';
 import React, { useState } from 'react';
-import { UserPostsFilterMenu } from '@/utils/interfaces';
+import { ExtendedUser, UserPostsFilterMenu } from '@/utils/interfaces';
 import { useUserPosts } from '@/hooks/post';
 import FeedCard from '@/components/FeedCard';
 import { Maybe, Post, User } from '@/gql/graphql';
 import LoadingSpinner from '@/components/Skeletons/LoadingSpinner';
-import { useUserByName } from '@/hooks/user';
+import { useCurrentUserContext, useGetUser, useUserByName } from '@/hooks/user';
 import { useRouter } from 'next/navigation';
+import ProfileAction from '@/components/ProfileAction';
+import { useQueryClient } from '@tanstack/react-query';
 
 const PostFilters: UserPostsFilterMenu[] = [
   {
@@ -31,12 +33,15 @@ const PostFilters: UserPostsFilterMenu[] = [
 const UserProfilePage = ({ params }: { params: { userProfile: string } }) => {
   const { userProfile: userName } = params;
   const [selectedFilter, setSelectedFilter] = useState('posts');
-  const { status, currentUser } = useUserByName(userName);
+  const { status, user: currentUser } = useCurrentUserContext();
+  const { user: loggedInUser } = useGetUser();
+  // const queryClient = useQueryClient();
   const router = useRouter();
 
+  if (!currentUser) return null;
   return (
-    <div className="relative w-full">
-      <div className="flex gap-6 max-w-[600px] p-3 items-center h-[60px] fixed top-0 w-full backdrop-blur-xl z-20">
+    <React.Fragment>
+      <div className="flex gap-6 max-w-[600px] p-3 items-center h-[60px] sticky top-0 w-full backdrop-blur-xl z-20">
         <button
           onClick={() => router.back()}
           className="text-[25px] p-3 hover:bg-[#e7e9ea1a] rounded-full"
@@ -58,7 +63,7 @@ const UserProfilePage = ({ params }: { params: { userProfile: string } }) => {
           )}
         </div>
       </div>
-      <div className="w-full relative mt-[60px]">
+      <div className="w-full relative">
         <div className="w-full max-w-[600px] max-h-[200px] aspect-w-3 aspect-h-1 relative overflow-hidden">
           <Image
             src={UserCoverPlaceholder}
@@ -82,9 +87,10 @@ const UserProfilePage = ({ params }: { params: { userProfile: string } }) => {
         </div>
       </div>
       <div className="text-right p-4">
-        <button className="px-3 py-1 border border-[#536471] rounded-full text-[#EFF3F4]">
-          Edit Profile
-        </button>
+        <ProfileAction
+          currentUser={currentUser as ExtendedUser}
+          loggedInUser={loggedInUser}
+        />
       </div>
       <div className="px-4">
         {status === 'pending' ? (
@@ -102,11 +108,19 @@ const UserProfilePage = ({ params }: { params: { userProfile: string } }) => {
         <p className="text-sm text-[#e7e9ea]">Bio</p>
       </div>
       <div className="py-6 px-4">
-        <span className="font-semibold text-[#e7e9ea] mr-5 hover:underline cursor-pointer">
-          100 <span className="text-[#71767b] font-light">Followers</span>
+        <span
+          onClick={() => router.push(`/${userName}/details`)}
+          className="font-semibold text-[#e7e9ea] mr-5 hover:underline cursor-pointer"
+        >
+          {currentUser.follower?.length}{' '}
+          <span className="text-[#71767b] font-light">Followers</span>
         </span>
-        <span className="font-semibold text-[#e7e9ea] hover:underline cursor-pointer">
-          100 <span className="text-[#71767b] font-light">Following</span>
+        <span
+          onClick={() => router.push(`/${userName}/details`)}
+          className="font-semibold text-[#e7e9ea] hover:underline cursor-pointer"
+        >
+          {currentUser.following?.length}{' '}
+          <span className="text-[#71767b] font-light">Following</span>
         </span>
       </div>
       <div className="py-6">
@@ -132,7 +146,7 @@ const UserProfilePage = ({ params }: { params: { userProfile: string } }) => {
           )}
         </div>
       </div>
-    </div>
+    </React.Fragment>
   );
 };
 

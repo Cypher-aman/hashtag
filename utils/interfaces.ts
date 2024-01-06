@@ -1,6 +1,10 @@
 import { Post, User } from '@/gql/graphql';
 import React from 'react';
 
+export interface ExtendedUser extends User {
+  follower: User[] | [];
+  following: User[] | [];
+}
 export interface PostInterface {
   content: string;
   imageUrl?: string;
@@ -34,4 +38,10 @@ export interface PostsFilterStatus {
   status: string;
   posts: Post[] | [];
   isFetching: boolean;
+}
+
+export interface ProfileActionProps {
+  loggedInUser?: User | null;
+  currentUser: ExtendedUser;
+  invalidateFn?: () => void;
 }

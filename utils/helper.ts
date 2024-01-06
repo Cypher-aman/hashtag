@@ -1,3 +1,6 @@
+import { User } from '@/gql/graphql';
+import { ExtendedUser } from './interfaces';
+
 export const formatTimestamp = (timestamp: any) => {
   const targetDate: any = new Date(timestamp);
   const now: any = new Date();
@@ -28,4 +31,17 @@ export const formatTimestamp = (timestamp: any) => {
 
 export const countRemainingChar = (text: string, limit: number) => {
   return limit - text.length;
+};
+
+export const checkFollowStatus = (
+  currentUser: ExtendedUser,
+  loggedInUser: User
+) => {
+  const followerIndex = currentUser.follower.findIndex(
+    (el) => el.id === loggedInUser.id
+  );
+  const followingIndex = currentUser.following.findIndex(
+    (el) => el.id === loggedInUser.id
+  );
+  return { follower: followerIndex, following: followingIndex };
 };

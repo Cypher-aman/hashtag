@@ -22,15 +22,53 @@ export const getUserInfoQuery = graphql(`
 `);
 
 export const getUserByNameQuery = graphql(`
-    #graphql
-    query GetUserByName($userName: String!) {
-  getUserByName(userName: $userName) {
-    id
-    firstName
-    lastName
-    userName
-    email
-    profilePicUrl
+  #graphql
+  query GetUserByName($userName: String!) {
+    getUserByName(userName: $userName) {
+      id
+      firstName
+      lastName
+      userName
+      email
+      profilePicUrl
+
+      follower {
+        id
+        firstName
+        lastName
+        userName
+        profilePicUrl
+      }
+
+      following {
+        id
+        firstName
+        lastName
+        userName
+        profilePicUrl
+      }
+    }
   }
-}
+`);
+
+export const getRecommendedUserQuery = graphql(`
+  #graphql
+  query GetRecommendedUsers {
+    getRecommendedUsers {
+      firstName
+      lastName
+      id
+      email
+      userName
+      profilePicUrl
+
+      follower {
+        id
+      }
+
+      following {
+        id
+      }
+    }
+  }
 `);

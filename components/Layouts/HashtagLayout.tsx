@@ -9,9 +9,11 @@ import { useGetUser } from '@/hooks/user';
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
 import { useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import RecommendedUser from '../RecommendedUser/RecommendedUser';
 
 const HashtagLayout: React.FC<HashtagLayoutProps> = (props) => {
   const { user } = useGetUser();
+
   const queryClient = useQueryClient();
 
   const handleGoogleLogin = async (credentialResponse: CredentialResponse) => {
@@ -41,7 +43,7 @@ const HashtagLayout: React.FC<HashtagLayoutProps> = (props) => {
         {props.children}
       </section>
       <section className="p-5 hidden lg:block">
-        {!user?.id && (
+        {!user?.id ? (
           <div className="p-4 w-full border-[1px] border-gray-500 rounded">
             <h5 className="font-bold">New To Hashtag?</h5>
             <p className="text-gray-400 text-xs mb-4">
@@ -54,6 +56,8 @@ const HashtagLayout: React.FC<HashtagLayoutProps> = (props) => {
               }}
             />
           </div>
+        ) : (
+          <RecommendedUser loggedInUser={user} />
         )}
       </section>
     </main>
