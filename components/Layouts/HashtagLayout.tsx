@@ -35,7 +35,7 @@ const HashtagLayout: React.FC<HashtagLayoutProps> = (props) => {
     }
   };
   return (
-    <main className="grid sm:grid-cols-[1fr_100%] lg:grid-cols-[1fr_600px_1fr] grid-rows-1 h-screen container">
+    <main className="grid sm:grid-cols-[1fr_100%] lg:grid-cols-[1fr_600px_1fr] grid-rows-1 h-screen container w-full">
       <section className="py-4 transition-all relative justify-self-end hidden sm:block">
         <Sidebar user={user} />
       </section>

@@ -6,14 +6,13 @@ import UserCoverPlaceholder from '@/assets/images/twitter-cover.jpg';
 import UserProfilePlaceholder from '@/assets/images/user-avatar.jpg';
 import React, { useState } from 'react';
 import { ExtendedUser, UserPostsFilterMenu } from '@/utils/interfaces';
-import { useUserPosts } from '@/hooks/post';
-import FeedCard from '@/components/FeedCard';
+import { usePostContext, useUserPosts } from '@/hooks/post';
+import PostCard from '@/components/FeedCard';
 import { Maybe, Post, User } from '@/gql/graphql';
 import LoadingSpinner from '@/components/Skeletons/LoadingSpinner';
-import { useCurrentUserContext, useGetUser, useUserByName } from '@/hooks/user';
+import { useCurrentUserContext, useLoggedInUserContext } from '@/hooks/user';
 import { useRouter } from 'next/navigation';
 import ProfileAction from '@/components/ProfileAction';
-import { useQueryClient } from '@tanstack/react-query';
 
 const PostFilters: UserPostsFilterMenu[] = [
   {
@@ -34,7 +33,7 @@ const UserProfilePage = ({ params }: { params: { userProfile: string } }) => {
   const { userProfile: userName } = params;
   const [selectedFilter, setSelectedFilter] = useState('posts');
   const { status, user: currentUser } = useCurrentUserContext();
-  const { user: loggedInUser } = useGetUser();
+  const { user: loggedInUser } = useLoggedInUserContext();
   // const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -152,8 +151,13 @@ const UserProfilePage = ({ params }: { params: { userProfile: string } }) => {
 
 const UserPostsFeed = (props: any) => {
   const { userName, userId } = props;
+  const keyName = 'user_posts';
   const allPosts = useUserPosts(userName, userId);
-  if (allPosts.status === 'pending' || allPosts.isFetching) {
+  const { isUpdating, postFn, posts, updatePost } = usePostContext(
+    keyName,
+    allPosts.posts
+  );
+  if (allPosts.status === 'pending') {
     return (
       <div className="py-8 flex justify-center">
         <LoadingSpinner />
@@ -171,20 +175,15 @@ const UserPostsFeed = (props: any) => {
 
   return (
     <div>
-      {allPosts.posts.map(
-        (post: {
-          id: any;
-          __typename?: 'Post' | undefined;
-          author?: User;
-          authorId?: string;
-          content?: string;
-          createdAt?: any;
-          imageUrl?: Maybe<string> | undefined;
-          updatedAt?: any;
-        }) => (
-          <FeedCard key={post?.id} {...(post as Post)} />
-        )
-      )}
+      {posts.map((post) => (
+        <PostCard
+          key={post?.id}
+          post={post as Post}
+          postFn={postFn}
+          isUpdating={isUpdating}
+          updatePost={() => updatePost(userName)}
+        />
+      ))}
     </div>
   );
 };

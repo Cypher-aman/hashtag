@@ -10,8 +10,8 @@ import {
   IoNotificationsOutline,
   IoSearchOutline,
 } from 'react-icons/io5';
-import { TbWriting } from 'react-icons/tb';
 import Image from 'next/image';
+import { CreatePostModal } from '../Modals/CreatePostModal';
 
 const sideBarMenuButtons: SidebarMenuInterface[] = [
   {
@@ -69,12 +69,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
         </ul>{' '}
       </div>
       <div className="xl:px-2 xl:pr-6 xl:w-full w-full pr-4 lg:pr-0 lg:pl-3">
-        <button className="text-xl rounded-full bg-purple-600 hover:bg-purple-500 cursor-pointer py-3 mt-5 xl:w-full flex justify-center items-center w-fit xl:px-0 px-3">
-          <span className="text-[26px] inline xl:hidden">
-            <TbWriting />
-          </span>
-          <span className="hidden xl:inline">Post</span>
-        </button>
+        <CreatePostModal />
       </div>
       <SidebarUserInfo user={user} />
     </div>

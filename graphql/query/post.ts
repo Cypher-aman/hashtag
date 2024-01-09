@@ -14,6 +14,14 @@ export const getAllPostsQuery = graphql(`
         userName
         profilePicUrl
       }
+      isLiked
+      likeCount
+      likes {
+        userId
+      }
+      replies {
+        id
+      }
       createdAt
     }
   }
@@ -32,6 +40,14 @@ export const getUserPostsQuery = graphql(`
         userName
         profilePicUrl
       }
+      isLiked
+      likeCount
+      likes {
+        userId
+      }
+      replies {
+        id
+      }
       createdAt
     }
   }
@@ -41,5 +57,66 @@ export const getPresignerURLQuery = graphql(`
   #graphql
   query getPresignerURL($imageType: String!, $imageName: String!) {
     getPresignerURL(imageType: $imageType, imageName: $imageName)
+  }
+`);
+
+export const getRepliesToPostQuery = graphql(`
+  #graphql
+  query GetRepliesToPost($postId: String!) {
+    getRepliesToPost(postId: $postId) {
+      id
+      content
+      imageUrl
+      isLiked
+      likes {
+        userId
+      }
+      author {
+        firstName
+        lastName
+        userName
+        profilePicUrl
+      }
+      replies {
+        id
+        content
+        postId
+        parentId
+        replies {
+          id
+        }
+      }
+    }
+  }
+`);
+
+export const getNestedRepliesQuery = graphql(`
+  #graphql
+  query GetNestedReplies($parentId: String!) {
+    getNestedReplies(parentId: $parentId) {
+      id
+      content
+      imageUrl
+      postId
+      parentId
+      author {
+        firstName
+        lastName
+        userName
+        profilePicUrl
+      }
+      replies {
+        id
+        content
+        imageUrl
+        parentId
+        author {
+          firstName
+          lastName
+          userName
+          profilePicUrl
+        }
+      }
+    }
   }
 `);

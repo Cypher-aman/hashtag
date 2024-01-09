@@ -1,5 +1,7 @@
 import { GraphQL } from '@/client/api';
+import { LoggedInUserContext } from '@/context/LoggedInUserContext';
 import { UserContext } from '@/context/ProfileUserContext';
+import { User } from '@/gql/graphql';
 import {
   getRecommendedUserQuery,
   getUserByNameQuery,
@@ -39,8 +41,10 @@ export const useRecommendedUsers = () => {
 
 export const useCurrentUserContext = () => {
   const userState = useContext(UserContext);
-  // if (!userState?.user) {
-  //   return null;
-  // }
   return { user: userState?.user as ExtendedUser, status: userState?.status };
+};
+
+export const useLoggedInUserContext = () => {
+  const userState = useContext(LoggedInUserContext);
+  return { user: userState?.user as User, status: userState?.status };
 };

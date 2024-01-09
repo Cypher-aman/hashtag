@@ -10,17 +10,23 @@
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.0.5",
     "@react-oauth/google": "^0.12.1",
     "@tanstack/react-query": "^5.15.3",
     "@tanstack/react-query-devtools": "^5.15.3",
     "axios": "^1.6.4",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
     "encoding": "^0.1.13",
     "graphql-request": "^6.1.0",
+    "lucide-react": "^0.307.0",
     "next": "13.5.6",
     "react": "^18",
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
-    "react-icons": "^4.12.0"
+    "react-icons": "^4.12.0",
+    "tailwind-merge": "^2.2.0",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.0",

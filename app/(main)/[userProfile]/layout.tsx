@@ -4,6 +4,7 @@ import LoadingSpinner from '@/components/Skeletons/LoadingSpinner';
 import { UserContext } from '@/context/ProfileUserContext';
 import { useUserByName } from '@/hooks/user';
 import { ExtendedUser } from '@/utils/interfaces';
+import Error from '@/components/Error/error';
 
 const ProfilePageLayout = ({
   params,
@@ -17,7 +18,7 @@ const ProfilePageLayout = ({
   const { status, currentUser } = useUserByName(userName);
 
   if (status === 'error') {
-    return <div>Error</div>;
+    return <Error />;
   } else if (status === 'pending') {
     return (
       <div className="h-screen flex justify-center items-center ">
