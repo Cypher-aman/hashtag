@@ -13,3 +13,24 @@ export const unfollowUserQuery = graphql(`
     unfollowUser(to: $to)
   }
 `);
+
+export const updateProfileMutation = graphql(`
+  #graphql
+  mutation UpdateUserProfile($payload: UpdateUserProfileInput!) {
+    updateUserProfile(payload: $payload)
+  }
+`);
+
+export const createUserMutation = graphql(`
+  #graphql
+  mutation CreateUser($payload: CreateUserInput!) {
+    createUser(payload: $payload)
+  }
+`);
+
+export const generateOTPMutation = graphql(`
+  #graohql
+  mutation GenerateOTP($to: String!) {
+    generateOTP(to: $to)
+  }
+`);

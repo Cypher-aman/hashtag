@@ -1,4 +1,4 @@
-import { Like, Maybe, Post, Reply, Scalars, User } from '@/gql/graphql';
+import { Post, User } from '@/gql/graphql';
 import React from 'react';
 
 export interface ExtendedUser extends User {
@@ -20,6 +20,8 @@ export interface ReplyInterface {
 export interface SidebarMenuInterface {
   title: string;
   icon: React.ReactNode;
+  link?: string;
+  activeIcon?: React.ReactNode;
 }
 
 export interface HashtagLayoutProps {
@@ -51,22 +53,4 @@ export interface ProfileActionProps {
   loggedInUser?: User | null;
   currentUser: ExtendedUser;
   invalidateFn?: () => void;
-}
-
-export interface PostAndReplyInterface {
-  __typename?: 'Reply' | 'Post' | undefined | null;
-  author: User;
-  authorId: Scalars['String']['output'];
-  content: Scalars['String']['output'];
-  createdAt: Scalars['Date']['output'];
-  id: Scalars['ID']['output'];
-  imageUrl?: Maybe<Scalars['String']['output']>;
-  isLiked?: Maybe<Scalars['Boolean']['output']>;
-  likes?: Maybe<Array<Maybe<Like>>>;
-  parent?: Maybe<Reply>;
-  parentId?: Maybe<Scalars['String']['output']>;
-  post?: Post;
-  postId?: Scalars['String']['output'];
-  replies?: Maybe<Array<Maybe<Reply>>>;
-  updatedAt: Scalars['Date']['output'];
 }

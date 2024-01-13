@@ -1,17 +1,21 @@
 'use client';
 
-import React, { useCallback } from 'react';
-import PostCard from '@/components/FeedCard';
+import React, { useCallback, useEffect, useState } from 'react';
+import PostCard from '@/components/PostCard';
 import { useLoggedInUserContext } from '@/hooks/user';
 import { PostInterface } from '@/utils/interfaces';
 import { useCreatePost, useGetAllPosts, usePostContext } from '@/hooks/post';
 import LoadingSpinner from '@/components/Skeletons/LoadingSpinner';
 import CreatePost from '@/components/CreatePost/createPost';
 import Error from '@/components/Error/error';
-import { Post } from '@/gql/graphql';
+import { FaHashtag } from 'react-icons/fa6';
+
+import { Post, User } from '@/gql/graphql';
+import SideScreenMenu from '@/components/Modals/SideScreenMenu';
+import CreatePostModal from '@/components/Modals/CreatePostModal';
 
 export default function Home() {
-  const { status } = useLoggedInUserContext();
+  const { status, user } = useLoggedInUserContext();
 
   const { mutate } = useCreatePost();
   const [postContent, setPostContent] = React.useState<PostInterface>({
@@ -38,11 +42,14 @@ export default function Home() {
 
   return (
     <React.Fragment>
-      <CreatePost
-        postContent={postContent}
-        setPostContent={setPostContent}
-        handlePostSubmit={handlePostSubmit}
-      />
+      <SmallScreenHeader user={user} />
+      <div className="hidden sm:block">
+        <CreatePost
+          postContent={postContent}
+          setPostContent={setPostContent}
+          handlePostSubmit={handlePostSubmit}
+        />
+      </div>
       <PostFeed />
     </React.Fragment>
   );
@@ -50,12 +57,17 @@ export default function Home() {
 
 const PostFeed = () => {
   const keyName = 'posts';
+  const [post, setPost] = useState<Post[] | []>([]);
+  // const []
+
+  useEffect(() => {}, []);
 
   const { status, posts: postArr } = useGetAllPosts();
   const { isUpdating, postFn, posts, updatePost } = usePostContext(
     keyName,
     postArr as Post[]
   );
+
   if (status === 'pending') {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -71,7 +83,6 @@ const PostFeed = () => {
       </div>
     );
   }
-
   return (
     <React.Fragment>
       {posts?.map((post) => (
@@ -80,9 +91,25 @@ const PostFeed = () => {
           post={post as Post}
           postFn={postFn}
           isUpdating={isUpdating}
-          updatePost={() => updatePost('posts')}
+          keyName="posts"
         />
       ))}
+      <div className="fixed right-2 bottom-5 block sm:hidden">
+        <CreatePostModal />
+      </div>
     </React.Fragment>
+  );
+};
+
+const SmallScreenHeader = ({ user }: { user: User }) => {
+  return (
+    <nav className="sticky top-0 border-b border-[#2f3336] block sm:hidden">
+      <div className="w-full relative h-[50px] backdrop-blur-3xl flex justify-center items-center">
+        <SideScreenMenu user={user} />
+        <div className="text-2xl">
+          <FaHashtag className="rotate-12" />
+        </div>
+      </div>
+    </nav>
   );
 };

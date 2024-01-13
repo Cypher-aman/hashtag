@@ -1,17 +1,17 @@
 import { GraphQL } from '@/client/api';
-import { PostContext, PostContextInterface } from '@/context/PostContext';
-import { CreatePostInput, CreateReplyInput, Post, Reply } from '@/gql/graphql';
+import { CreatePostInput, CreateReplyInput, Post } from '@/gql/graphql';
 import {
+  bookmarkPostMutation,
   createPostMutation,
   createReplyMutation,
   likePostMutation,
+  unBookmarkPostMutation,
   unlikePostMutation,
 } from '@/graphql/mutation/post';
 import { getAllPostsQuery, getRepliesToPostQuery } from '@/graphql/query/post';
 import { getUserPostsQuery } from '@/graphql/query/post';
-import { PostAndReplyInterface } from '@/utils/interfaces';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 export const useGetAllPosts = () => {
@@ -48,7 +48,7 @@ export const useUserPosts = (userName: string, userId: string) => {
     enabled: !!userId,
   });
 
-  return { status, isFetching, posts: (data?.getUserPosts as Post[]) || [] };
+  return { status, isFetching, posts: data?.getUserPosts as Post[] };
 };
 
 export const useCreateReply = () => {
@@ -63,6 +63,7 @@ export const useCreateReply = () => {
     onSuccess: async () => {
       toast.success('Replied!', { id: '3' });
       await queryClient.invalidateQueries({ queryKey: ['posts'] });
+      await queryClient.invalidateQueries({ queryKey: ['post_details'] });
     },
     onError: () => {
       toast.error('Failed to reply', { id: '3' });
@@ -74,18 +75,18 @@ export const useCreateReply = () => {
 
 export const usePostDetails = (postId: string) => {
   const { status, data } = useQuery({
-    queryKey: [postId],
+    queryKey: ['post_details'],
     queryFn: async () =>
       await GraphQL.request(getRepliesToPostQuery, { postId }),
   });
 
-  return { status, data };
+  return { status, post: data?.getRepliesToPost };
 };
 
-export const usePostContext = (key: string, postArr: (Post | Reply)[]) => {
+export const usePostContext = (key: string, postArr: Post[]) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const queryClient = useQueryClient();
-  const [posts, setPosts] = useState<(Post | Reply)[]>(postArr);
+  const [posts, setPosts] = useState<Post[]>(postArr);
 
   useEffect(() => {
     setPosts(postArr);
@@ -96,6 +97,7 @@ export const usePostContext = (key: string, postArr: (Post | Reply)[]) => {
   };
 
   const likePost = async (postId: string) => {
+    console.log('inside-like', postId);
     try {
       setIsUpdating(true);
       setPosts((prev) => {
@@ -167,5 +169,156 @@ export const usePostContext = (key: string, postArr: (Post | Reply)[]) => {
     }
   };
 
-  return { isUpdating, postFn: { likePost, unlikePost }, posts, updatePost };
+  const bookmarkPost = async (postId: string) => {
+    try {
+      setIsUpdating(true);
+      setPosts((prev) => {
+        return prev.map((post) => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              isBookmarked: true,
+              bookmarkCount: post.bookmarkCount ? post.bookmarkCount + 1 : 1,
+            };
+          }
+          return post;
+        });
+      });
+      await GraphQL.request(bookmarkPostMutation, { postId });
+      updatePost(key);
+    } catch (error) {
+      toast.error('Something went wrong');
+      setPosts((prev) => {
+        return prev.map((post) => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              isBookmarked: false,
+              bookmarkCount: post.bookmarkCount ? post.bookmarkCount - 1 : 0,
+            };
+          }
+          return post;
+        });
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const unBookmarkPost = async (postId: string) => {
+    try {
+      setIsUpdating(true);
+      setPosts((prev) => {
+        return prev.map((post) => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              isBookmarked: false,
+              bookmarkCount: post.bookmarkCount ? post.bookmarkCount - 1 : 0,
+            };
+          }
+          return post;
+        });
+      });
+      await GraphQL.request(unBookmarkPostMutation, { postId });
+      updatePost(key);
+    } catch (error) {
+      toast.error('Something went wrong');
+      setPosts((prev) => {
+        return prev.map((post) => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              isBookmarked: true,
+              bookmarkCount: post.bookmarkCount ? post.bookmarkCount + 1 : 1,
+            };
+          }
+          return post;
+        });
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  return {
+    isUpdating,
+    postFn: { likePost, unlikePost, bookmarkPost, unBookmarkPost },
+    posts,
+    updatePost,
+  };
+};
+
+export const usePostUpadate = (data: Post) => {
+  const [post, setPost] = useState<Post>(data);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    setPost(data);
+  }, [data]);
+
+  const updatePost = async () => {
+    await queryClient.invalidateQueries({ queryKey: [post.id] });
+  };
+
+  const likePost = async () => {
+    try {
+      setIsUpdating(true);
+      setPost((prev) => {
+        return {
+          ...prev,
+          isLiked: true,
+          likeCount: prev.likeCount ? prev.likeCount + 1 : 1,
+        };
+      });
+      await GraphQL.request(likePostMutation, { postId: post.id });
+      updatePost();
+      setIsUpdating(false);
+    } catch (error) {
+      toast.error('Something went wrong');
+      setPost((prev) => {
+        return {
+          ...prev,
+          isLiked: false,
+          likeCount: prev.likeCount ? prev.likeCount - 1 : 0,
+        };
+      });
+      setIsUpdating(false);
+    }
+  };
+
+  const unlikePost = async () => {
+    try {
+      setIsUpdating(true);
+      setPost((prev) => {
+        return {
+          ...prev,
+          isLiked: false,
+          likeCount: prev.likeCount ? prev.likeCount - 1 : 0,
+        };
+      });
+      await GraphQL.request(unlikePostMutation, { postId: post.id });
+      updatePost();
+      setIsUpdating(false);
+    } catch (error) {
+      toast.error('Something went wrong');
+      setPost((prev) => {
+        return {
+          ...prev,
+          isLiked: true,
+          likeCount: prev.likeCount ? prev.likeCount + 1 : 1,
+        };
+      });
+      setIsUpdating(false);
+    }
+  };
+
+  const postFn = {
+    likePost,
+    unlikePost,
+    updatePost,
+  };
+
+  return { postFn, post, isUpdating };
 };

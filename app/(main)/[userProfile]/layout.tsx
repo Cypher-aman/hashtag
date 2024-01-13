@@ -15,7 +15,7 @@ const ProfilePageLayout = ({
 }) => {
   const { userProfile: userName } = params;
 
-  const { status, currentUser } = useUserByName(userName);
+  const { status, currentUser, isFetching } = useUserByName(userName);
 
   if (status === 'error') {
     return <Error />;
@@ -25,6 +25,8 @@ const ProfilePageLayout = ({
         <LoadingSpinner />
       </div>
     );
+  } else if (status === 'success' && !currentUser?.id) {
+    return <div className="text-center text-gray-400 ">User Not Found</div>;
   }
 
   return (

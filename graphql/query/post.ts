@@ -16,6 +16,8 @@ export const getAllPostsQuery = graphql(`
       }
       isLiked
       likeCount
+      isBookmarked
+      bookmarkCount
       likes {
         userId
       }
@@ -42,6 +44,8 @@ export const getUserPostsQuery = graphql(`
       }
       isLiked
       likeCount
+      isBookmarked
+      bookmarkCount
       likes {
         userId
       }
@@ -68,55 +72,56 @@ export const getRepliesToPostQuery = graphql(`
       content
       imageUrl
       isLiked
+      likeCount
+      parentId
+      createdAt
       likes {
         userId
       }
       author {
         firstName
         lastName
-        userName
         profilePicUrl
+        userName
       }
       replies {
         id
         content
-        postId
-        parentId
+        likeCount
+        createdAt
+        imageUrl
+        author {
+          firstName
+          lastName
+          profilePicUrl
+          userName
+        }
         replies {
           id
+        }
+        isLiked
+        likes {
+          userId
         }
       }
     }
   }
 `);
 
-export const getNestedRepliesQuery = graphql(`
+export const getSearchPostsQuery = graphql(`
   #graphql
-  query GetNestedReplies($parentId: String!) {
-    getNestedReplies(parentId: $parentId) {
+  query GetPosts($query: String!) {
+    getPosts(query: $query) {
       id
       content
       imageUrl
-      postId
-      parentId
       author {
+        profilePicUrl
         firstName
         lastName
         userName
-        profilePicUrl
       }
-      replies {
-        id
-        content
-        imageUrl
-        parentId
-        author {
-          firstName
-          lastName
-          userName
-          profilePicUrl
-        }
-      }
+      createdAt
     }
   }
 `);

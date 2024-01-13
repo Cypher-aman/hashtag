@@ -5,6 +5,7 @@ import { ProfileActionProps } from '@/utils/interfaces';
 import { useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import toast from 'react-hot-toast';
+import EditProfile from '../EditProfile/editProfile';
 
 const ProfileAction: React.FC<ProfileActionProps> = ({
   loggedInUser,
@@ -15,11 +16,7 @@ const ProfileAction: React.FC<ProfileActionProps> = ({
   if (!loggedInUser?.id) return <div className="py-4"></div>;
 
   if (loggedInUser.id === currentUser.id) {
-    return (
-      <button className="px-3 py-1 border border-[#536471] rounded-full text-[#EFF3F4]">
-        Edit Profile
-      </button>
-    );
+    return <EditProfile user={currentUser} />;
   }
 
   const handleFollow = async () => {

@@ -6,11 +6,13 @@ import { useRouter } from 'next/navigation';
 import React, { useCallback, useState } from 'react';
 import { GoArrowLeft } from 'react-icons/go';
 import Image from 'next/image';
+import UserAvatar from '@/assets/images/user-avatar.jpg';
+import { useSearchParams } from 'next/navigation';
 
 const Menu = [
   {
     name: 'Followers',
-    key: 'follower',
+    key: 'followers',
   },
   {
     name: 'Following',
@@ -20,20 +22,32 @@ const Menu = [
 
 const Detail = () => {
   const router = useRouter();
-  const [selectedFilter, setSelectedFilter] = useState('follower');
+  const searchParams = useSearchParams();
+  const defaultOption = searchParams.get('q');
+  const [selectedFilter, setSelectedFilter] = useState(defaultOption);
   const { status, user: currentUser } = useCurrentUserContext();
   const [usersList, setUsersList] = useState<User[] | []>(
-    currentUser?.follower
+    defaultOption === 'followers'
+      ? currentUser?.follower || []
+      : currentUser?.following || []
   );
 
+  const currentUrl = String(window.location.href).split('?')[0];
   const handleFilterChange = useCallback(
     (key: string) => {
-      setSelectedFilter(key);
-      if (key === 'follower') {
+      if (key === 'followers') {
         setUsersList(currentUser?.follower || []);
       } else if (key === 'following') {
         setUsersList(currentUser?.following || []);
       }
+
+      setSelectedFilter(key);
+      const newUrl = `${currentUrl}?q=${key}`;
+      window.history.replaceState(
+        { ...window.history.state, as: newUrl, url: newUrl },
+        '',
+        newUrl
+      );
     },
     [currentUser]
   );
@@ -92,7 +106,7 @@ const Detail = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <Image
-                  src={user.profilePicUrl}
+                  src={user.profilePicUrl || UserAvatar}
                   width={40}
                   height={40}
                   alt="profile pic"

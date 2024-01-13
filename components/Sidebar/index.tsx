@@ -2,46 +2,64 @@
 
 import { SidebarMenuInterface, SidebarProps } from '@/utils/interfaces';
 import React from 'react';
-import { BiSolidHome } from 'react-icons/bi';
-import { FaHashtag, FaRegUser } from 'react-icons/fa6';
-import { HiOutlineEnvelope } from 'react-icons/hi2';
+import { BiSolidHome, BiHome } from 'react-icons/bi';
+import { FaHashtag, FaRegUser, FaUser } from 'react-icons/fa6';
+import { HiOutlineEnvelope, HiEnvelope } from 'react-icons/hi2';
 import {
   IoBookmarkOutline,
   IoNotificationsOutline,
   IoSearchOutline,
+  IoBookmark,
+  IoSearchSharp,
+  IoNotifications,
 } from 'react-icons/io5';
-import Image from 'next/image';
 import { CreatePostModal } from '../Modals/CreatePostModal';
-
-const sideBarMenuButtons: SidebarMenuInterface[] = [
-  {
-    title: 'Home',
-    icon: <BiSolidHome />,
-  },
-  {
-    title: 'Explore',
-    icon: <IoSearchOutline />,
-  },
-  {
-    title: 'Notifications',
-    icon: <IoNotificationsOutline />,
-  },
-  {
-    title: 'Messages',
-    icon: <HiOutlineEnvelope />,
-  },
-  {
-    title: 'Bookmarks',
-    icon: <IoBookmarkOutline />,
-  },
-  {
-    title: 'Profile',
-    icon: <FaRegUser />,
-  },
-];
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import LogoutPopover from '../Popover/LogoutPopover';
 
 const Sidebar: React.FC<SidebarProps> = (props) => {
+  const pathname = usePathname();
   const { user } = props;
+  const sideBarMenuButtons: SidebarMenuInterface[] = [
+    {
+      title: 'Home',
+      icon: <BiHome />,
+      link: '/home',
+      activeIcon: <BiSolidHome />,
+    },
+    {
+      title: 'Explore',
+      icon: <IoSearchOutline />,
+      link: '/explore',
+      activeIcon: <IoSearchSharp />,
+    },
+    {
+      title: 'Notifications',
+      icon: <IoNotificationsOutline />,
+      link: '/notifications',
+      activeIcon: <IoNotifications />,
+    },
+    {
+      title: 'Messages',
+      icon: <HiOutlineEnvelope />,
+      link: '/messages',
+      activeIcon: <HiEnvelope />,
+    },
+    {
+      title: 'Bookmarks',
+      icon: <IoBookmarkOutline />,
+      link: '/bookmarks',
+      activeIcon: <IoBookmark />,
+    },
+    {
+      title: 'Profile',
+      icon: <FaRegUser />,
+      link: `/${user?.userName}`,
+      activeIcon: <FaUser />,
+    },
+  ];
+
   return (
     <div className="flex flex-col w-full items-end xl:items-start   lg:pr-6">
       <div className="text-3xl mr-4 lg:mr-0 ml-2 p-2 hover:bg-gray-700 rounded-full w-fit cursor-pointer">
@@ -55,14 +73,19 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
                 key={index}
                 className="mb-2 p-2 xl:px-4 w-fit rounded-full flex gap-4 items-center cursor-pointer hover:bg-gray-700"
               >
-                <span className="text-[26px]">{el.icon}</span>
-                <span
-                  className={`${
-                    index === 0 ? 'font-semibold' : ''
-                  } text-xl hidden xl:inline`}
-                >
-                  {el.title}
-                </span>
+                {' '}
+                <Link className="flex gap-4" href={el.link || '/home'}>
+                  <span className="text-[26px]">
+                    {pathname === el.link ? el.activeIcon : el.icon}
+                  </span>
+                  <span
+                    className={`${
+                      pathname === el.link ? 'font-semibold' : ''
+                    } text-xl hidden xl:inline`}
+                  >
+                    {el.title}
+                  </span>
+                </Link>
               </li>
             );
           })}
@@ -83,25 +106,7 @@ const SidebarUserInfo: React.FC<SidebarProps> = (props) => {
     return null;
   }
 
-  return (
-    <div className="flex absolute bottom-5 items-center w-fit gap-2 xl:py-2 xl:px-3 hover:bg-[#e7e9ea1a] rounded-full xl:mr-3 mr-3 lg:mr-1">
-      {user.profilePicUrl && (
-        <Image
-          className="rounded-full"
-          alt="user-image"
-          src={user.profilePicUrl}
-          height={40}
-          width={40}
-        />
-      )}
-      <div className="hidden xl:block">
-        <p className="text-base font-semibold hover:underline cursor-pointer">
-          {user.firstName + ' ' + (user.lastName || '')}
-        </p>
-        <p className="text-gray-400 text-sm">@{user.userName}</p>
-      </div>
-    </div>
-  );
+  return <LogoutPopover user={user} />;
 };
 
 export default Sidebar;

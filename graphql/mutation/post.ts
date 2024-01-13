@@ -29,3 +29,17 @@ export const createReplyMutation = graphql(`
     createReply(payload: $payload)
   }
 `);
+
+export const bookmarkPostMutation = graphql(`
+  #graphql
+  mutation BookmarkPost($postId: String!) {
+    bookmarkPost(postId: $postId)
+  }
+`);
+
+export const unBookmarkPostMutation = graphql(`
+  #graphql
+  mutation UnBookmarkPost($postId: String!) {
+    unBookmarkPost(postId: $postId)
+  }
+`);

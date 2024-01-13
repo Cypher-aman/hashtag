@@ -9,41 +9,39 @@ import CreatePost from '../CreatePost/createPost';
 import { useCreateReply } from '@/hooks/post';
 import { PostInterface } from '@/utils/interfaces';
 import React, { useCallback } from 'react';
-import { Reply } from '@/gql/graphql';
 import { BiMessageRounded } from 'react-icons/bi';
 import Image from 'next/image';
-import { useLoggedInUserContext } from '@/hooks/user';
 import { countRemainingChar, formatTimestamp } from '@/utils/helper';
+import { Post } from '@/gql/graphql';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface CreateReplyModalProps {
-  post: Reply;
-  updatePost: () => void;
+  post: Post;
+  keyName: string;
 }
 
 const CreateReplyModal: React.FC<CreateReplyModalProps> = (props) => {
-  const { post, updatePost } = props;
-  const { user } = useLoggedInUserContext();
+  const { post, keyName } = props;
   const { content, imageUrl, createdAt, author } = post;
   const [replyContent, setReplyContent] = React.useState<PostInterface>({
     content: '',
     imageUrl: '',
   });
-
+  const queryClient = useQueryClient();
   const mutation = useCreateReply();
 
   const handleReplySubmit = useCallback(async () => {
     if (!replyContent.content) return;
     mutation.mutate({
       ...replyContent,
-      postId: post.id,
-      parentId: post.postId ? post.postId : '',
+      parentId: post.id,
     });
-    updatePost();
+    queryClient.invalidateQueries({ queryKey: [keyName] });
     setReplyContent({
       content: '',
       imageUrl: '',
     });
-  }, [replyContent, mutation, post.postId, post.id, updatePost]);
+  }, [replyContent, mutation, post.id, queryClient, keyName]);
 
   return (
     <Dialog>
