@@ -23,6 +23,7 @@ import {
   createUserMutation,
   generateOTPMutation,
 } from '@/graphql/mutation/user';
+import { AiOutlineReload } from 'react-icons/ai';
 
 const SignUpForm = () => {
   const form = useForm<z.infer<typeof signUpSchema>>({
@@ -44,7 +45,6 @@ const SignUpForm = () => {
             email: email,
           }
         );
-        console.log('isValid', isValid);
         if (!isValid) {
           form.setError('email', {
             type: 'custom',
@@ -58,24 +58,31 @@ const SignUpForm = () => {
       case 1: {
         const output = await form.trigger(['userName']);
         if (!output) return;
-        const { checkUserName: isValid } = await GraphQL.request(
-          checkUserNameQuery,
-          { userName: form.getValues('userName') }
-        );
-        if (!isValid) {
-          form.setError('userName', {
-            type: 'custom',
-            message: 'Username already exists',
-          });
-          return;
+        try {
+          setLoading(true);
+          const { checkUserName: isValid } = await GraphQL.request(
+            checkUserNameQuery,
+            { userName: form.getValues('userName') }
+          );
+          if (!isValid) {
+            form.setError('userName', {
+              type: 'custom',
+              message: 'Username already exists',
+            });
+            return;
+          }
+          next();
+          break;
+        } finally {
+          setLoading(false);
         }
-        next();
-        break;
       }
       case 2: {
+        setLoading(true);
         await GraphQL.request(generateOTPMutation, {
           to: form.getValues('email'),
         });
+        setLoading(false);
         next();
       }
       case 3: {
@@ -89,8 +96,7 @@ const SignUpForm = () => {
           });
           return;
         }
-
-        console.log(parseInt);
+        setLoading(true);
         const { verifyOTP } = await GraphQL.request(verifyOTPQuery, {
           to: form.getValues('email'),
           otp: parseInt,
@@ -99,6 +105,7 @@ const SignUpForm = () => {
           setIsVerified(true);
           onSubmit(form.getValues());
           goTo(4);
+          setLoading(false);
           return;
         } else {
           form.setError('otp', {
@@ -106,7 +113,7 @@ const SignUpForm = () => {
             message: 'Invalid OTP',
           });
         }
-        console.log('exit');
+        setLoading(false);
         return;
       }
       default:
@@ -167,7 +174,6 @@ const SignUpForm = () => {
     goTo(0);
     form.reset();
   };
-  console.log('index', currentStepIndex);
   return (
     <Dialog onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
@@ -202,7 +208,10 @@ const SignUpForm = () => {
                       Back
                     </Button>
                   )}
-                  <Button onClick={handleNext} type="button">
+                  <Button disabled={loading} onClick={handleNext} type="button">
+                    {loading && (
+                      <AiOutlineReload className="mr-2 h-4 w-4 animate-spin" />
+                    )}
                     {isLastStep ? 'Finish' : 'Next'}
                   </Button>
                 </div>

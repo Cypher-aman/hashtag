@@ -62,7 +62,6 @@ const EditProfile = ({ user }: { user: User }) => {
       const isAvailable = await GraphQL.request(checkUserNameQuery, {
         userName: values.userName,
       });
-      console.log(isAvailable.checkUserName, values.userName, user?.userName);
       if (!isAvailable.checkUserName && values.userName !== user?.userName) {
         toast.error('Username already taken');
         return;

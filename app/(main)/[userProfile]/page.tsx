@@ -221,6 +221,7 @@ const UserProfilePage = ({ params }: { params: { userProfile: string } }) => {
             height={200}
             className="w-full h-full object-cover"
           />
+
           {currentUser?.userName === loggedInUser?.userName && (
             <div
               onClick={handleCoverSubmit}
@@ -238,7 +239,7 @@ const UserProfilePage = ({ params }: { params: { userProfile: string } }) => {
             <div className="relative group cursor-pointer">
               <Image
                 src={currentUser?.profilePicUrl || UserProfilePlaceholder}
-                className="rounded-full object-cover border-4 border-black"
+                className="rounded-full object-cover bg-gray-500 border-4 border-black"
                 alt="cover"
                 width={150}
                 height={150}
@@ -330,7 +331,6 @@ const UserProfilePage = ({ params }: { params: { userProfile: string } }) => {
 const UserPostsFeed: React.FC<UserPosts> = (props) => {
   const { posts: fetchedPosts, status } = props;
   const keyName = 'user_posts';
-  console.log('fetchedPosts', fetchedPosts);
   const { isUpdating, postFn, posts } = usePostContext(keyName, fetchedPosts);
   if (status === 'pending') {
     return (
@@ -365,7 +365,6 @@ const UserPostsFeed: React.FC<UserPosts> = (props) => {
 
 const UserPostWithMedia = ({ userId }: { userId: string }) => {
   const { status, posts: postWithMedia } = usePostsWithMedia(userId);
-  console.log('fetchedPosts', postWithMedia);
 
   const keyName = 'posts_with_media';
 
@@ -406,7 +405,6 @@ const UserPostWithMedia = ({ userId }: { userId: string }) => {
 
 const UserLikedPosts = ({ userId }: { userId: string }) => {
   const { status, likedPosts } = useLikedPosts(userId);
-  console.log('likedPosts', likedPosts);
 
   const keyName = 'liked_posts';
   const { isUpdating, postFn, posts } = usePostContext(

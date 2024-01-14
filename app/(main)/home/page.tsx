@@ -1,18 +1,31 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import PostCard from '@/components/PostCard';
 import { useLoggedInUserContext } from '@/hooks/user';
 import { PostInterface } from '@/utils/interfaces';
-import { useCreatePost, useGetAllPosts, usePostContext } from '@/hooks/post';
+import {
+  useCreatePost,
+  useGetAllPosts,
+  usePostContext,
+  usePostContextExp,
+} from '@/hooks/post';
 import LoadingSpinner from '@/components/Skeletons/LoadingSpinner';
 import CreatePost from '@/components/CreatePost/createPost';
 import Error from '@/components/Error/error';
 import { FaHashtag } from 'react-icons/fa6';
-
+import { useInView } from 'react-intersection-observer';
 import { Post, User } from '@/gql/graphql';
 import SideScreenMenu from '@/components/Modals/SideScreenMenu';
 import CreatePostModal from '@/components/Modals/CreatePostModal';
+
+interface getAllPostsInterface {
+  posts: Post[];
+  nextId: string;
+}
+interface PagesInterface {
+  getAllPosts: getAllPostsInterface;
+}
 
 export default function Home() {
   const { status, user } = useLoggedInUserContext();
@@ -55,17 +68,35 @@ export default function Home() {
   );
 }
 
-const PostFeed = () => {
+const PostFeed = React.memo(() => {
   const keyName = 'posts';
-  const [post, setPost] = useState<Post[] | []>([]);
-  // const []
+  const { ref, inView } = useInView();
+  const {
+    status,
+    data,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    isFetching,
+  } = useGetAllPosts();
+  // const [postArr, setPostArr] = React.useState<Post[]>([]);
 
-  useEffect(() => {}, []);
+  // useEffect(() => {
+  //   setPostArr([]);
+  //   data?.pages.forEach((page) => {
+  //     setPostArr((prev) => [...prev, ...(page.getAllPosts?.posts as Post[])]);
+  //   });
+  // }, [data]);
 
-  const { status, posts: postArr } = useGetAllPosts();
-  const { isUpdating, postFn, posts, updatePost } = usePostContext(
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView]);
+
+  const { isUpdating, postFn, posts, updatePost } = usePostContextExp(
     keyName,
-    postArr as Post[]
+    data?.pages as PagesInterface[]
   );
 
   if (status === 'pending') {
@@ -94,12 +125,18 @@ const PostFeed = () => {
           keyName="posts"
         />
       ))}
+      {isFetchingNextPage && (
+        <div className="flex justify-center py-4 items-center">
+          <LoadingSpinner />
+        </div>
+      )}
+      <div className="h-6 w-full" ref={ref}></div>
       <div className="fixed right-2 bottom-5 block sm:hidden">
         <CreatePostModal />
       </div>
     </React.Fragment>
   );
-};
+});
 
 const SmallScreenHeader = ({ user }: { user: User }) => {
   return (

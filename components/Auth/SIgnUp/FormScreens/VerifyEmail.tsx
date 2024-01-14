@@ -26,8 +26,6 @@ const VerifyEmail = (props: Partial<VerifyEmailProps>) => {
   const { form, email, isVerified, setIsVerified } = props;
   const { count, setCount } = useCountDown(60);
 
-  console.log(count);
-
   const onResend = async () => {
     await GraphQL.request(generateOTPMutation, {
       to: email!,

@@ -5,6 +5,7 @@ import { Inter } from 'next/font/google';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import './globals.css';
+import Head from 'next/head';
 
 const inter = Inter({ subsets: ['latin'] });
 const queryClient = new QueryClient();
@@ -21,6 +22,47 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <Head>
+        {/* Primary Meta Tags */}
+        <title>Hashtag App - Social Media Redefined</title>
+        <meta name="title" content="Hashtag App - Social Media Redefined" />
+        <meta
+          name="description"
+          content="Explore Hashtag App, your new social media destination. Connect with others, share your thoughts, and stay updated on trending topics. Join us in shaping the future of social networking. #HashtagApp #SocialMedia"
+        />
+
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://yourwebsite.com" />
+        <meta
+          property="og:title"
+          content="Hashtag App - Social Media Redefined"
+        />
+        <meta
+          property="og:description"
+          content="Explore Hashtag App, your new social media destination. Connect with others, share your thoughts, and stay updated on trending topics. Join us in shaping the future of social networking. #HashtagApp #SocialMedia"
+        />
+        <meta
+          property="og:image"
+          content="https://i.ibb.co/M6jMxVC/Untitled-design-2.png"
+        />
+
+        {/* Twitter */}
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content="https://yourwebsite.com" />
+        <meta
+          property="twitter:title"
+          content="Hashtag App - Social Media Redefined"
+        />
+        <meta
+          property="twitter:description"
+          content="Explore Hashtag App, your new social media destination. Connect with others, share your thoughts, and stay updated on trending topics. Join us in shaping the future of social networking. #HashtagApp #SocialMedia"
+        />
+        <meta
+          property="twitter:image"
+          content="https://i.ibb.co/M6jMxVC/Untitled-design-2.png"
+        />
+      </Head>
       <GoogleOAuthProvider clientId="315498993260-0v30d4ekfk696ldacrhgcrg85qt8rd5a.apps.googleusercontent.com">
         <QueryClientProvider client={queryClient}>
           <body className={inter.className}>{children}</body>

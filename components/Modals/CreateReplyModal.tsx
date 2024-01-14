@@ -14,6 +14,7 @@ import Image from 'next/image';
 import { countRemainingChar, formatTimestamp } from '@/utils/helper';
 import { Post } from '@/gql/graphql';
 import { useQueryClient } from '@tanstack/react-query';
+import UserAvatar from '@/assets/images/user-avatar.jpg';
 
 interface CreateReplyModalProps {
   post: Post;
@@ -49,7 +50,7 @@ const CreateReplyModal: React.FC<CreateReplyModalProps> = (props) => {
         <button className="group flex items-center">
           <BiMessageRounded className="group-hover:bg-blue-500 group-hover:bg-opacity-10 p-2 rounded-full text-4xl group-hover:text-blue-500" />
           <span className="text-sm text-gray-500 group-hover:text-blue-500">
-            {post.replies?.length}
+            {post.replies?.length === 0 ? '' : post.replies?.length}
           </span>
         </button>
       </DialogTrigger>
@@ -58,7 +59,7 @@ const CreateReplyModal: React.FC<CreateReplyModalProps> = (props) => {
           <div className="w-full flex gap-4 px-3 ">
             <div className="w-[40px] h-auto">
               <Image
-                src={author?.profilePicUrl}
+                src={author?.profilePicUrl || UserAvatar}
                 width={40}
                 height={40}
                 alt="Profile picture"

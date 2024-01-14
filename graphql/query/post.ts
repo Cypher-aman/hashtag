@@ -2,29 +2,32 @@ import { graphql } from '@/gql';
 
 export const getAllPostsQuery = graphql(`
   #graphql
-  query GetAllPosts {
-    getAllPosts {
-      id
-      content
-      imageUrl
-      author {
+  query GetAllPosts($cursor: String!) {
+    getAllPosts(cursor: $cursor) {
+      posts {
         id
-        firstName
-        lastName
-        userName
-        profilePicUrl
+        content
+        imageUrl
+        author {
+          id
+          firstName
+          lastName
+          userName
+          profilePicUrl
+        }
+        isLiked
+        likeCount
+        isBookmarked
+        bookmarkCount
+        likes {
+          userId
+        }
+        replies {
+          id
+        }
+        createdAt
       }
-      isLiked
-      likeCount
-      isBookmarked
-      bookmarkCount
-      likes {
-        userId
-      }
-      replies {
-        id
-      }
-      createdAt
+      nextId
     }
   }
 `);
@@ -64,6 +67,21 @@ export const getPresignerURLQuery = graphql(`
   }
 `);
 
+export const getPresignerURLForSignUpQuery = graphql(`
+  #graphql
+  query getPresignerURLForSignUp(
+    $imageType: String!
+    $imageName: String!
+    $email: String!
+  ) {
+    getPresignerURLForSignUp(
+      imageType: $imageType
+      imageName: $imageName
+      email: $email
+    )
+  }
+`);
+
 export const getRepliesToPostQuery = graphql(`
   #graphql
   query GetRepliesToPost($postId: String!) {
@@ -73,6 +91,8 @@ export const getRepliesToPostQuery = graphql(`
       imageUrl
       isLiked
       likeCount
+      isBookmarked
+      bookmarkCount
       parentId
       createdAt
       likes {
@@ -88,6 +108,7 @@ export const getRepliesToPostQuery = graphql(`
         id
         content
         likeCount
+        bookmarkCount
         createdAt
         imageUrl
         author {
@@ -100,6 +121,7 @@ export const getRepliesToPostQuery = graphql(`
           id
         }
         isLiked
+        isBookmarked
         likes {
           userId
         }

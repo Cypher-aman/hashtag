@@ -19,18 +19,21 @@ const NotificationPage = () => {
     );
   }
 
-  if (!notifications) {
+  if (notifications?.length === 0) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p>No Notifications</p>
-      </div>
+      <>
+        <h1 className="text-2xl py-6 p-3 font-bold ">Notifications</h1>
+        <div className="flex justify-center items-center h-screen">
+          <p>No Notifications</p>
+        </div>
+      </>
     );
   }
 
   return (
     <div>
       <h1 className="text-2xl py-6 p-3 font-bold ">Notifications</h1>
-      {notifications.map((notification) => {
+      {notifications?.map((notification) => {
         const { sender } = notification as Notification;
         const { link, text } = generateNotificationText(
           notification as Notification

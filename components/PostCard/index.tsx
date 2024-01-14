@@ -67,9 +67,9 @@ const PostCard: React.FC<PostCardPros> = (props) => {
             <CreateReplyModal post={post as Post} keyName={keyName} />
             <button className="text-[20px] p-2 hover:bg-green-500 hover:bg-opacity-10 rounded-full hover:text-green-500 flex items-center gap-2">
               <AiOutlineRetweet />
-              <span className="text-sm text-gray-500 hover:text-green-500">
+              {/* <span className="text-sm text-gray-500 hover:text-green-500">
                 0
-              </span>
+              </span> */}
             </button>
             <button className="group flex items-center" disabled={isUpdating}>
               {post.isLiked ? (

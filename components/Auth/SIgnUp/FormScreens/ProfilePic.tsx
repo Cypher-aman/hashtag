@@ -11,9 +11,13 @@ import React, { useCallback } from 'react';
 import FormWrapper from '../Wrapper/Wrapper';
 import toast from 'react-hot-toast';
 import { GraphQL } from '@/client/api';
-import { getPresignerURLQuery } from '@/graphql/query/post';
+import {
+  getPresignerURLForSignUpQuery,
+  getPresignerURLQuery,
+} from '@/graphql/query/post';
 import axios from 'axios';
 import Image from 'next/image';
+import LoadingSpinner from '@/components/Skeletons/LoadingSpinner';
 
 interface ProfilePicProps {
   form: any;
@@ -22,15 +26,18 @@ interface ProfilePicProps {
 const ProfilePic = (props: Partial<ProfilePicProps>) => {
   const { form } = props;
   const [image, setImage] = React.useState<string | null>(null);
+  const [uploading, setUploading] = React.useState(false);
 
   const handleImageUpload = useCallback(async (file: File) => {
     try {
+      setUploading(true);
       toast.loading('Uploading...', { id: '4' });
-      const { getPresignerURL: url } = await GraphQL.request(
-        getPresignerURLQuery,
+      const { getPresignerURLForSignUp: url } = await GraphQL.request(
+        getPresignerURLForSignUpQuery,
         {
           imageType: file.type,
           imageName: file.name,
+          email: form.getValues('email'),
         }
       );
       if (!url) throw new Error('Failed to upload image');
@@ -44,17 +51,18 @@ const ProfilePic = (props: Partial<ProfilePicProps>) => {
       toast.success('Profile picture uploaded successfully', { id: '4' });
     } catch (error) {
       toast.error('Failed to upload image', { id: '4' });
+    } finally {
+      setUploading(false);
     }
   }, []);
 
-  const handleImageChange = useCallback(
-    async (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target?.files?.[0];
-      if (!file) return;
-      await handleImageUpload(file);
-    },
-    [handleImageUpload]
-  );
+  const handleImageChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target?.files?.[0];
+    if (!file) return;
+    await handleImageUpload(file);
+  };
   return (
     <FormWrapper title="Profile Picture">
       <div className="flex flex-col items-center">
@@ -68,7 +76,9 @@ const ProfilePic = (props: Partial<ProfilePicProps>) => {
             className="rounded-full"
           />
         ) : (
-          <div className="w-[180px] h-[180px] rounded-full bg-slate-300"></div>
+          <div className="w-[180px] h-[180px] rounded-full flex justify-center items-center bg-slate-300">
+            {uploading && <LoadingSpinner />}
+          </div>
         )}
         <FormField
           name="Upload an image"
@@ -83,7 +93,7 @@ const ProfilePic = (props: Partial<ProfilePicProps>) => {
                   className="dark:bg-black"
                   placeholder="Upload your profile pic"
                   {...field}
-                  onChange={handleImageChange}
+                  onChange={(event) => handleImageChange(event)}
                 />
               </FormControl>
               <FormDescription>

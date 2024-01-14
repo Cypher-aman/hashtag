@@ -10,17 +10,39 @@ import {
 } from '@/graphql/mutation/post';
 import { getAllPostsQuery, getRepliesToPostQuery } from '@/graphql/query/post';
 import { getUserPostsQuery } from '@/graphql/query/post';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useInfiniteQuery,
+} from '@tanstack/react-query';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
 export const useGetAllPosts = () => {
-  const query = useQuery({
+  const {
+    status,
+    data,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    ...query
+  } = useInfiniteQuery({
     queryKey: ['posts'],
-    queryFn: async () => await GraphQL.request(getAllPostsQuery),
+    queryFn: async ({ pageParam = '' }) =>
+      await GraphQL.request(getAllPostsQuery, { cursor: pageParam }),
+    initialPageParam: '',
+    getNextPageParam: (lastPage) => lastPage?.getAllPosts?.nextId,
   });
-
-  return { ...query, posts: query.data?.getAllPosts };
+  // console.log('query', query.data?.pages);
+  return {
+    status,
+    data,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    ...query,
+  };
 };
 
 export const useCreatePost = () => {
@@ -89,15 +111,14 @@ export const usePostContext = (key: string, postArr: Post[]) => {
   const [posts, setPosts] = useState<Post[]>(postArr);
 
   useEffect(() => {
-    setPosts(postArr);
+    setPosts((prev) => postArr);
   }, [postArr]);
 
   const updatePost = (keyName: string) => {
     queryClient.invalidateQueries({ queryKey: [`${keyName}`] });
   };
 
-  const likePost = async (postId: string) => {
-    console.log('inside-like', postId);
+  const likePost = useCallback(async (postId: string) => {
     try {
       setIsUpdating(true);
       setPosts((prev) => {
@@ -131,9 +152,9 @@ export const usePostContext = (key: string, postArr: Post[]) => {
     } finally {
       setIsUpdating(false);
     }
-  };
+  }, []);
 
-  const unlikePost = async (postId: string) => {
+  const unlikePost = useCallback(async (postId: string) => {
     try {
       setIsUpdating(true);
       setPosts((prev) => {
@@ -167,9 +188,9 @@ export const usePostContext = (key: string, postArr: Post[]) => {
     } finally {
       setIsUpdating(false);
     }
-  };
+  }, []);
 
-  const bookmarkPost = async (postId: string) => {
+  const bookmarkPost = useCallback(async (postId: string) => {
     try {
       setIsUpdating(true);
       setPosts((prev) => {
@@ -203,9 +224,9 @@ export const usePostContext = (key: string, postArr: Post[]) => {
     } finally {
       setIsUpdating(false);
     }
-  };
+  }, []);
 
-  const unBookmarkPost = async (postId: string) => {
+  const unBookmarkPost = useCallback(async (postId: string) => {
     try {
       setIsUpdating(true);
       setPosts((prev) => {
@@ -239,7 +260,7 @@ export const usePostContext = (key: string, postArr: Post[]) => {
     } finally {
       setIsUpdating(false);
     }
-  };
+  }, []);
 
   return {
     isUpdating,
@@ -321,4 +342,180 @@ export const usePostUpadate = (data: Post) => {
   };
 
   return { postFn, post, isUpdating };
+};
+
+interface getAllPostsInterface {
+  posts: Post[];
+  nextId: string;
+}
+interface PagesInterface {
+  getAllPosts: getAllPostsInterface;
+}
+
+export const usePostContextExp = (key: string, pages: PagesInterface[]) => {
+  const [isUpdating, setIsUpdating] = useState(false);
+  const queryClient = useQueryClient();
+  const [posts, setPosts] = useState<Post[]>();
+
+  useEffect(() => {
+    const postArr = pages?.map((page) => page?.getAllPosts.posts).flat();
+    setPosts(postArr);
+  }, [pages]);
+
+  // console.log('inside-hook', isFetching);
+
+  const updatePost = (keyName: string) => {
+    queryClient.invalidateQueries({ queryKey: [`${keyName}`] });
+  };
+
+  const likePost = useCallback(async (postId: string) => {
+    try {
+      setIsUpdating(true);
+      setPosts((prev) => {
+        return prev?.map((post) => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              isLiked: true,
+              likeCount: post.likeCount ? post.likeCount + 1 : 1,
+            };
+          }
+          return post;
+        });
+      });
+      await GraphQL.request(likePostMutation, { postId });
+      updatePost(key);
+    } catch (error) {
+      toast.error('Something went wrong');
+      setPosts((prev) => {
+        return prev?.map((post) => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              isLiked: false,
+              likeCount: post.likeCount ? post.likeCount - 1 : 0,
+            };
+          }
+          return post;
+        });
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  }, []);
+
+  const unlikePost = useCallback(async (postId: string) => {
+    try {
+      setIsUpdating(true);
+      setPosts((prev) => {
+        return prev?.map((post) => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              isLiked: false,
+              likeCount: post.likeCount ? post.likeCount - 1 : 0,
+            };
+          }
+          return post;
+        });
+      });
+      await GraphQL.request(unlikePostMutation, { postId });
+      updatePost(key);
+    } catch (error) {
+      toast.error('Something went wrong');
+      setPosts((prev) => {
+        return prev?.map((post) => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              isLiked: true,
+              likeCount: post.likeCount ? post.likeCount + 1 : 1,
+            };
+          }
+          return post;
+        });
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  }, []);
+
+  const bookmarkPost = useCallback(async (postId: string) => {
+    try {
+      setIsUpdating(true);
+      setPosts((prev) => {
+        return prev?.map((post) => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              isBookmarked: true,
+              bookmarkCount: post.bookmarkCount ? post.bookmarkCount + 1 : 1,
+            };
+          }
+          return post;
+        });
+      });
+      await GraphQL.request(bookmarkPostMutation, { postId });
+      updatePost(key);
+    } catch (error) {
+      toast.error('Something went wrong');
+      setPosts((prev) => {
+        return prev?.map((post) => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              isBookmarked: false,
+              bookmarkCount: post.bookmarkCount ? post.bookmarkCount - 1 : 0,
+            };
+          }
+          return post;
+        });
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  }, []);
+
+  const unBookmarkPost = useCallback(async (postId: string) => {
+    try {
+      setIsUpdating(true);
+      setPosts((prev) => {
+        return prev?.map((post) => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              isBookmarked: false,
+              bookmarkCount: post.bookmarkCount ? post.bookmarkCount - 1 : 0,
+            };
+          }
+          return post;
+        });
+      });
+      await GraphQL.request(unBookmarkPostMutation, { postId });
+      updatePost(key);
+    } catch (error) {
+      toast.error('Something went wrong');
+      setPosts((prev) => {
+        return prev?.map((post) => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              isBookmarked: true,
+              bookmarkCount: post.bookmarkCount ? post.bookmarkCount + 1 : 1,
+            };
+          }
+          return post;
+        });
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  }, []);
+
+  return {
+    isUpdating,
+    postFn: { likePost, unlikePost, bookmarkPost, unBookmarkPost },
+    posts,
+    updatePost,
+  };
 };

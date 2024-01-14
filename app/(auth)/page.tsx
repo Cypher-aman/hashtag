@@ -10,6 +10,7 @@ import { getUserGoogleToken } from '@/graphql/query/user';
 import { GraphQL } from '@/client/api';
 import { useGetUser } from '@/hooks/user';
 import { useQueryClient } from '@tanstack/react-query';
+import Link from 'next/link';
 
 // const isClient = typeof window !== 'undefined';
 
@@ -32,7 +33,6 @@ const AuthPage = () => {
       const { verifyGoogleToken } = await GraphQL.request(getUserGoogleToken, {
         token: authToken,
       });
-      console.log('loggedIn');
       window.localStorage.setItem('__hashtag_token', verifyGoogleToken);
 
       GraphQL.setHeaders({ Authorization: `Bearer ${verifyGoogleToken}` });
@@ -65,7 +65,7 @@ const AuthPage = () => {
               <GoogleLogin
                 width={300}
                 onSuccess={handleGoogleLogin}
-                onError={() => console.log('Something went wrong!')}
+                onError={() => toast.error('Something went wrong!')}
               />
             </div>
             <div className="text-[#e7e9ea] font-medium gap-1 flex items-center py-2">
@@ -87,6 +87,16 @@ const AuthPage = () => {
           </div>
         </div>
       </section>
+      <div className="text-[#e7e9ea] fixed  bottom-0 p-1 sm:text-base text-xs flex w-full justify-center gap-1">
+        Developed with passion by{' '}
+        <Link
+          href="https://www.linkedin.com/in/aman-rai-292ba1157"
+          target="_blank"
+          className="text-purple-500  font-medium"
+        >
+          Aman Rai
+        </Link>
+      </div>
     </main>
   );
 };

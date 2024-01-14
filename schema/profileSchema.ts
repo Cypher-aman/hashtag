@@ -5,7 +5,6 @@ import { checkUserNameQuery } from '@/graphql/query/user';
 
 const debouncedCheckUsernameAvailability = debounce(
   async (userName: string) => {
-    console.log('timer');
     return await GraphQL.request(checkUserNameQuery, { userName });
   },
   500

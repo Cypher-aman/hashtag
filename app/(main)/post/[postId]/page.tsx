@@ -68,7 +68,6 @@ const PostPage = ({ params }: { params: { postId: string } }) => {
   }
 
   const { author } = post;
-  console.log('inside-main');
 
   return (
     <main>

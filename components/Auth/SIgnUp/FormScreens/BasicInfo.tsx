@@ -9,6 +9,7 @@ import {
 import { Input } from '@/components/ui/input';
 import FormWrapper from '../Wrapper/Wrapper';
 import React from 'react';
+import { FaRegEyeSlash, FaRegEye } from 'react-icons/fa';
 
 interface BasicInfo {
   firstName: string;
@@ -22,6 +23,8 @@ interface BasicInfoProps extends BasicInfo {
 
 const BasicInfo = (props: Partial<BasicInfoProps>) => {
   const { form } = props;
+
+  const [changeType, setChangeType] = React.useState('password');
   return (
     <FormWrapper title="Basic Info">
       <div className="flex gap-2 w-full">
@@ -88,12 +91,26 @@ const BasicInfo = (props: Partial<BasicInfoProps>) => {
           <FormItem>
             <FormLabel>Password</FormLabel>
             <FormControl>
-              <Input
-                type="password"
-                className="dark:bg-black"
-                placeholder="Enter your password"
-                {...field}
-              />
+              <div className="flex items-center relative">
+                {changeType === 'password' ? (
+                  <FaRegEyeSlash
+                    onClick={() => setChangeType('text')}
+                    className="absolute  cursor-pointer right-3 top-3"
+                  />
+                ) : (
+                  <FaRegEye
+                    onClick={() => setChangeType('password')}
+                    className="absolute cursor-pointer right-3 top-3"
+                  />
+                )}
+                <Input
+                  className="dark:bg-black"
+                  required
+                  placeholder="Enter your password"
+                  type={changeType}
+                  {...field}
+                />
+              </div>
             </FormControl>
             <FormMessage />
           </FormItem>
