@@ -27,11 +27,11 @@ export default function RootLayout({
   const router = useRouter();
   const queryClient = useQueryClient();
   const token = isClient && window.localStorage.getItem('__hashtag_token');
+  const { user, status } = useGetUser();
 
   if (!token) {
     return router.push('/');
   }
-  const { user, status } = useGetUser();
   return (
     <LoggedInUserContext.Provider value={{ user, status }}>
       <HashtagLayout>{children}</HashtagLayout>

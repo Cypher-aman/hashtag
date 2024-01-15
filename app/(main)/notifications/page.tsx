@@ -39,7 +39,7 @@ const NotificationPage = () => {
           notification as Notification
         );
         return (
-          <Link href={link}>
+          <Link key={sender?.id} href={link}>
             <div className="flex items-center gap-2 px-3 py-5 border-t border-b border-[#2f3336] hover:bg-[#e7e9ea1a]">
               <Link href={`/${sender?.userName}`}>
                 <Image

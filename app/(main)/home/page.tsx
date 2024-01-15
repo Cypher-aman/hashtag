@@ -27,7 +27,7 @@ interface PagesInterface {
   getAllPosts: getAllPostsInterface;
 }
 
-export default function Home() {
+const Home = () => {
   const { status, user } = useLoggedInUserContext();
 
   const { mutate } = useCreatePost();
@@ -66,7 +66,7 @@ export default function Home() {
       <PostFeed />
     </React.Fragment>
   );
-}
+};
 
 const PostFeed = React.memo(() => {
   const keyName = 'posts';
@@ -150,3 +150,6 @@ const SmallScreenHeader = ({ user }: { user: User }) => {
     </nav>
   );
 };
+
+Home.displayName = 'Home';
+export default Home;

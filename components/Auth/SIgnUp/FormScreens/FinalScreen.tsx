@@ -68,7 +68,7 @@ const FinalScreen: React.FC<FinalScreenProps> = (props) => {
             <h1 className="text-xl font-semibold text-red-500">
               Something went wrong
             </h1>
-            <p>It's not you, it's us. Please try again</p>
+            <p>It&apos;s not you, it&apos;s us. Please try again</p>
           </div>
         </div>
       )}
