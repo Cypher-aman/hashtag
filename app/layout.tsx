@@ -63,7 +63,9 @@ export default function RootLayout({
           content="https://i.ibb.co/M6jMxVC/Untitled-design-2.png"
         />
       </Head>
-      <GoogleOAuthProvider clientId="315498993260-0v30d4ekfk696ldacrhgcrg85qt8rd5a.apps.googleusercontent.com">
+      <GoogleOAuthProvider
+        clientId={process.env.NEXT_PUBLIC_GOOGLE_LOGIN_CLIENT_ID as string}
+      >
         <QueryClientProvider client={queryClient}>
           <body className={inter.className}>{children}</body>
         </QueryClientProvider>

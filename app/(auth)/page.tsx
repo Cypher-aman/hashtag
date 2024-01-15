@@ -60,7 +60,7 @@ const AuthPage = () => {
           <h2 className="text-[23px] md:text-[35px] mb-[18px] md:mb-[30px]  font-extrabold">
             Join today.
           </h2>
-          <div className="md:mb-[70px] mb-[40px]">
+          <div className="md:mb-[70px] mb-[40px] w-full">
             <div className="rounded-full overflow-hidden w-full max-w-[300px]">
               <GoogleLogin
                 width={300}
@@ -68,7 +68,7 @@ const AuthPage = () => {
                 onError={() => toast.error('Something went wrong!')}
               />
             </div>
-            <div className="text-[#e7e9ea] font-medium gap-1 flex items-center py-2">
+            <div className="text-[#e7e9ea] max-w-[300px] font-medium gap-1 flex items-center py-2">
               <span className="flex-1 h-[1px] bg-gray-700"></span>
               <span>or</span>
               <span className="flex-1 h-[1px] bg-gray-700"></span>
