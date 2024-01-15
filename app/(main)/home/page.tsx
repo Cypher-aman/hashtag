@@ -151,5 +151,7 @@ const SmallScreenHeader = ({ user }: { user: User }) => {
   );
 };
 
+PostFeed.displayName = 'PostFeed';
+SmallScreenHeader.displayName = 'SmallScreenHeader';
 Home.displayName = 'Home';
 export default Home;
