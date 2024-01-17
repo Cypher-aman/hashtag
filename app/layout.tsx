@@ -33,7 +33,7 @@ export default function RootLayout({
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://yourwebsite.com" />
+        <meta property="og:url" content="https://hashtagapp.live/" />
         <meta
           property="og:title"
           content="Hashtag App - Social Media Redefined"
@@ -49,7 +49,7 @@ export default function RootLayout({
 
         {/* Twitter */}
         <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="https://yourwebsite.com" />
+        <meta property="twitter:url" content="https://hashtagapp.live/" />
         <meta
           property="twitter:title"
           content="Hashtag App - Social Media Redefined"
