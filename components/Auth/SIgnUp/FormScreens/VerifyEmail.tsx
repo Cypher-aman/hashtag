@@ -63,7 +63,7 @@ const VerifyEmail = (props: Partial<VerifyEmailProps>) => {
             <FormLabel>OTP</FormLabel>
             <FormControl>
               <Input
-                className="dark:bg-black"
+                className="dark:bg-modalGray"
                 placeholder="Enter your OTP"
                 {...field}
                 type="number"

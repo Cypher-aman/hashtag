@@ -17,6 +17,7 @@ import { CreatePostModal } from '../Modals/CreatePostModal';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LogoutPopover from '../Popover/LogoutPopover';
+import { User } from '@/gql/graphql';
 
 const Sidebar: React.FC<SidebarProps> = (props) => {
   const pathname = usePathname();
@@ -61,41 +62,44 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
   ];
 
   return (
-    <div className="flex flex-col w-full items-end xl:items-start   lg:pr-6">
-      <div className="text-3xl mr-4 lg:mr-0 ml-2 p-2 hover:bg-gray-700 rounded-full w-fit cursor-pointer">
-        <FaHashtag className="rotate-12" />
+    <>
+      {' '}
+      <div className="flex flex-col w-full items-end xl:items-start   lg:pr-6">
+        <div className="text-3xl mr-4 lg:mr-0 ml-2 p-2 hover:bg-dimWhite/10 rounded-full w-fit cursor-pointer">
+          <FaHashtag className="rotate-12" />
+        </div>
+        <div className="mt-5 mr-5 lg:mr-0">
+          <ul>
+            {sideBarMenuButtons.map((el, index) => {
+              return (
+                <li
+                  key={index}
+                  className="mb-2 p-2 xl:px-4 w-fit rounded-full flex gap-4 items-center cursor-pointer hover:bg-dimWhite/10"
+                >
+                  {' '}
+                  <Link className="flex gap-4" href={el.link || '/home'}>
+                    <span className="text-[26px]">
+                      {pathname === el.link ? el.activeIcon : el.icon}
+                    </span>
+                    <span
+                      className={`${
+                        pathname === el.link ? 'font-semibold' : ''
+                      } text-xl hidden xl:inline`}
+                    >
+                      {el.title}
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>{' '}
+        </div>
+        <div className="xl:px-2 xl:pr-6 xl:w-full w-full pr-4 lg:pr-0 lg:pl-3">
+          <CreatePostModal />
+        </div>
+        <SidebarUserInfo user={user} />
       </div>
-      <div className="mt-5 mr-5 lg:mr-0">
-        <ul>
-          {sideBarMenuButtons.map((el, index) => {
-            return (
-              <li
-                key={index}
-                className="mb-2 p-2 xl:px-4 w-fit rounded-full flex gap-4 items-center cursor-pointer hover:bg-gray-700"
-              >
-                {' '}
-                <Link className="flex gap-4" href={el.link || '/home'}>
-                  <span className="text-[26px]">
-                    {pathname === el.link ? el.activeIcon : el.icon}
-                  </span>
-                  <span
-                    className={`${
-                      pathname === el.link ? 'font-semibold' : ''
-                    } text-xl hidden xl:inline`}
-                  >
-                    {el.title}
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>{' '}
-      </div>
-      <div className="xl:px-2 xl:pr-6 xl:w-full w-full pr-4 lg:pr-0 lg:pl-3">
-        <CreatePostModal />
-      </div>
-      <SidebarUserInfo user={user} />
-    </div>
+    </>
   );
 };
 

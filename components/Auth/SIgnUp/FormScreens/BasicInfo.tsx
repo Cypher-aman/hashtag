@@ -36,7 +36,7 @@ const BasicInfo = (props: Partial<BasicInfoProps>) => {
               <FormLabel>Firstname</FormLabel>
               <FormControl>
                 <Input
-                  className="dark:bg-black"
+                  className="dark:bg-modalGray"
                   required
                   placeholder="Enter your first name"
                   {...field}
@@ -54,7 +54,7 @@ const BasicInfo = (props: Partial<BasicInfoProps>) => {
               <FormLabel>Lastname</FormLabel>
               <FormControl>
                 <Input
-                  className="dark:bg-black"
+                  className="dark:bg-modalGray"
                   placeholder="Enter your last name"
                   {...field}
                 />
@@ -73,7 +73,7 @@ const BasicInfo = (props: Partial<BasicInfoProps>) => {
             <FormLabel>Email</FormLabel>
             <FormControl>
               <Input
-                className="dark:bg-black"
+                className="dark:bg-modalGray"
                 placeholder="Enter your email"
                 {...field}
               />
@@ -104,7 +104,7 @@ const BasicInfo = (props: Partial<BasicInfoProps>) => {
                   />
                 )}
                 <Input
-                  className="dark:bg-black"
+                  className="dark:bg-modalGray"
                   required
                   placeholder="Enter your password"
                   type={changeType}

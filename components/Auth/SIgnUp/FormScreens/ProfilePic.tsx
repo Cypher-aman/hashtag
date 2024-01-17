@@ -90,7 +90,7 @@ const ProfilePic = (props: Partial<ProfilePicProps>) => {
                   type="file"
                   id="picture"
                   accept="image/png, image/jpeg, image/jpg, image/webp"
-                  className="dark:bg-black"
+                  className="dark:bg-modalGray"
                   placeholder="Upload your profile pic"
                   {...field}
                   onChange={(event) => handleImageChange(event)}

@@ -201,7 +201,7 @@ const SignUpForm = () => {
                   {!isFirstStep && (
                     <Button
                       variant="outline"
-                      className="dark:bg-black"
+                      className="dark:bg-modalGray"
                       type="button"
                       onClick={back}
                     >

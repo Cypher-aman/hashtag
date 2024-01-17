@@ -55,7 +55,6 @@ const Home = () => {
 
   return (
     <React.Fragment>
-      <SmallScreenHeader user={user} />
       <div className="hidden sm:block">
         <CreatePost
           postContent={postContent}
@@ -138,20 +137,6 @@ const PostFeed = React.memo(() => {
   );
 });
 
-const SmallScreenHeader = ({ user }: { user: User }) => {
-  return (
-    <nav className="sticky top-0 border-b border-[#2f3336] block sm:hidden">
-      <div className="w-full relative h-[50px] backdrop-blur-3xl flex justify-center items-center">
-        <SideScreenMenu user={user} />
-        <div className="text-2xl">
-          <FaHashtag className="rotate-12" />
-        </div>
-      </div>
-    </nav>
-  );
-};
-
 PostFeed.displayName = 'PostFeed';
-SmallScreenHeader.displayName = 'SmallScreenHeader';
 Home.displayName = 'Home';
 export default Home;

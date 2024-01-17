@@ -23,7 +23,7 @@ const RecommendedUser = ({ loggedInUser }: { loggedInUser: User }) => {
     return null;
   }
   return (
-    <div className="xl:w-[350px] lg:w-[280px] flex flex-col gap-3 bg-[#16181c] rounded-xl  py-4">
+    <div className="xl:w-[350px] lg:w-[280px] flex flex-col gap-3 bg-sidebarGray rounded-xl  py-4">
       <h3 className="px-3 text-xl font-bold ">People you may follow</h3>
       {recommendedUsers?.map((currentUser) => (
         <div

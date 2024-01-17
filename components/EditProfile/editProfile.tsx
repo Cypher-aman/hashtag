@@ -77,9 +77,14 @@ const EditProfile = ({ user }: { user: User }) => {
       });
       toast.success('Profile updated successfully');
       router.replace(`/${values.userName}`);
-      await queryClient.invalidateQueries({
-        queryKey: ['user_info'],
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['user_by_name'],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ['user_info'],
+        }),
+      ]);
     } catch (error: any) {
       toast.error('Something went wrong');
     } finally {
@@ -93,7 +98,7 @@ const EditProfile = ({ user }: { user: User }) => {
           Edit Profile
         </button>
       </DialogTrigger>
-      <DialogContent className="p-6">
+      <DialogContent className="p-6 dark:bg-modalGray">
         <h2 className="text-2xl font-bold">Edit Profile</h2>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -106,7 +111,7 @@ const EditProfile = ({ user }: { user: User }) => {
                     <FormLabel>Firstname</FormLabel>
                     <FormControl>
                       <Input
-                        className="dark:bg-gray-900"
+                        className="dark:bg-modalGray"
                         placeholder="John"
                         {...field}
                       />
@@ -123,7 +128,7 @@ const EditProfile = ({ user }: { user: User }) => {
                     <FormLabel>Lastname</FormLabel>
                     <FormControl>
                       <Input
-                        className="dark:bg-gray-900"
+                        className="dark:bg-modalGray"
                         placeholder="Doe"
                         {...field}
                       />
@@ -141,7 +146,7 @@ const EditProfile = ({ user }: { user: User }) => {
                   <FormLabel>Username</FormLabel>
                   <FormControl>
                     <Input
-                      className="dark:bg-gray-900"
+                      className="dark:bg-modalGray"
                       placeholder="Doe"
                       {...field}
                     />
@@ -158,7 +163,7 @@ const EditProfile = ({ user }: { user: User }) => {
                   <FormLabel>Bio</FormLabel>
                   <FormControl>
                     <Textarea
-                      className="dark:bg-gray-900 resize-none"
+                      className="dark:bg-modalGray resize-none"
                       placeholder="Doe"
                       {...field}
                     />

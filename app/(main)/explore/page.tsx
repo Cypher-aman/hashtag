@@ -93,7 +93,7 @@ const ExplorePage = () => {
             placeholder="type your query"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full rounded-full p-5 pl-8"
+            className="w-full rounded-full p-5 pl-8 dark:bg-dimWhite/10 dark:border-none"
           />
         </div>
         <div className="flex justify-around border-b border-[#536471]">

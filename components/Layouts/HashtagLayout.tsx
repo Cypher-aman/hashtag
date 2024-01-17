@@ -5,6 +5,8 @@ import React from 'react';
 import Sidebar from '../Sidebar';
 import { useGetUser } from '@/hooks/user';
 import RecommendedUser from '../RecommendedUser/RecommendedUser';
+import SmallScreenHeader from '../Sidebar/smallScreenSIdebar';
+import { User } from '@/gql/graphql';
 
 const HashtagLayout: React.FC<HashtagLayoutProps> = (props) => {
   const { user } = useGetUser();
@@ -15,6 +17,7 @@ const HashtagLayout: React.FC<HashtagLayoutProps> = (props) => {
         <Sidebar user={user} />
       </section>
       <section className="hide-scrollbar sm:border-l-[1px] sm:border-r-[1px] sm:border-gray-500 overflow-y-scroll max-w-[600px]">
+        <SmallScreenHeader user={user as User} />
         {props.children}
       </section>
       <section className="p-5 hidden lg:block">

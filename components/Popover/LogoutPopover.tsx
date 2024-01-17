@@ -8,7 +8,6 @@ import { User } from '@/gql/graphql';
 import Image from 'next/image';
 import UserAvatar from '@/assets/images/user-avatar.jpg';
 import { BsThreeDotsVertical } from 'react-icons/bs';
-import { useRouter } from 'next/navigation';
 
 const LogoutPopover = ({ user }: { user: User }) => {
   const onLogout = () => {

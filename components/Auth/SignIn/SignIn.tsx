@@ -82,7 +82,7 @@ const SignInForm = () => {
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input
-                        className="dark:bg-black"
+                        className="dark:bg-modalGray"
                         required
                         placeholder="Enter your email"
                         {...field}
@@ -112,7 +112,7 @@ const SignInForm = () => {
                           />
                         )}
                         <Input
-                          className="dark:bg-black"
+                          className="dark:bg-modalGray"
                           required
                           placeholder="Enter your password"
                           type={changeType}

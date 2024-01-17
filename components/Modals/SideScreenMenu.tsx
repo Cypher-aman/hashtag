@@ -83,7 +83,7 @@ const SideScreenMenu = ({ user }: { user: User }) => {
           />
         </div>
       </SheetTrigger>
-      <SheetContent side={'left'} className="dark:bg-black">
+      <SheetContent side={'left'} className="dark:bg-modalGray">
         <SheetHeader>
           <SheetTitle>
             <Image
@@ -107,7 +107,7 @@ const SideScreenMenu = ({ user }: { user: User }) => {
             return (
               <li
                 key={index}
-                className="mb-2 py-2  w-fit rounded-full items-center cursor-pointer hover:bg-gray-700"
+                className="mb-2 py-2 w-fit px-2 rounded-full items-center cursor-pointer hover:bg-dimWhite/10"
               >
                 {' '}
                 <Link className="flex gap-4" href={el.link || '/home'}>
@@ -125,11 +125,13 @@ const SideScreenMenu = ({ user }: { user: User }) => {
               </li>
             );
           })}
-          <li className="mb-2 py-2 flex gap-4  w-fit rounded-full items-center cursor-pointer hover:bg-gray-700">
+          <li className="mb-2 py-2 px-2 flex gap-4  w-fit rounded-full items-center cursor-pointer hover:bg-dimWhite/10">
             <span className="text-[26px]">
               <BiLogOut />
             </span>
-            <span className="text-xl">Logout</span>
+            <span onClick={onLogout} className="text-xl">
+              Logout
+            </span>
           </li>
         </ul>
       </SheetContent>

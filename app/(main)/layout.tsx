@@ -11,6 +11,7 @@ import { LoggedInUserContext } from '@/context/LoggedInUserContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import LoadingSpinner from '@/components/Skeletons/LoadingSpinner';
 
 // export const metadata: Metadata = {
 //   title: 'Create Next App',
@@ -36,7 +37,11 @@ export default function RootLayout({
   }, [status, user]);
 
   if (!authenticated) {
-    return null;
+    return (
+      <div className="h-screen flex justify-center items-center ">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   return (

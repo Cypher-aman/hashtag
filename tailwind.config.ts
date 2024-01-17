@@ -20,6 +20,14 @@ const config = {
       },
     },
     extend: {
+      colors: {
+        dim: '#15202b',
+        borderGray: '#38444d',
+        dimWhite: '#f7f9f9',
+        sidebarGray: '#1e2732',
+        modalGray: '#131e29',
+        modalBackground: '#5b7083',
+      },
       keyframes: {
         'accordion-down': {
           from: { height: '0' },

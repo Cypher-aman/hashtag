@@ -30,7 +30,7 @@ const UserName = (props: Partial<UserNameProps>) => {
             <FormLabel>Username</FormLabel>
             <FormControl>
               <Input
-                className="dark:bg-black"
+                className="dark:bg-modalGray"
                 placeholder="Enter your username"
                 {...field}
               />

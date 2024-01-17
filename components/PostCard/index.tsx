@@ -27,7 +27,7 @@ const PostCard: React.FC<PostCardPros> = (props) => {
   const router = useRouter();
 
   return (
-    <article className="border border-r-0 border-l-0 border-b-0 border-[#2f3336] px-3 py-5 feed-card  transition-all cursor-pointer">
+    <article className="border border-r-0 border-l-0 border-b-0 border-borderGray px-3 py-5 feed-card  transition-all cursor-pointer">
       <div className="flex gap-3">
         <div className="w-[40px] h-auto">
           <UserProfileImage
