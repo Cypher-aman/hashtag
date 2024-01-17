@@ -22,7 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <Head>
+      <head>
         {/* Primary Meta Tags */}
         <title>Hashtag App - Social Media Redefined</title>
         <meta name="title" content="Hashtag App - Social Media Redefined" />
@@ -62,7 +62,7 @@ export default function RootLayout({
           property="twitter:image"
           content="https://i.ibb.co/M6jMxVC/Untitled-design-2.png"
         />
-      </Head>
+      </head>
       <GoogleOAuthProvider
         clientId={process.env.NEXT_PUBLIC_GOOGLE_LOGIN_CLIENT_ID as string}
       >
