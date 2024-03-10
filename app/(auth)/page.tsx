@@ -79,7 +79,7 @@ const AuthPage = () => {
           </div>
           <div className="w-full">
             <h3 className="sm:text-base text-sm mb-[15px]  font-extrabold">
-              Already have an account?
+              Want to test our app?
             </h3>
             <div>
               <SignInForm />
