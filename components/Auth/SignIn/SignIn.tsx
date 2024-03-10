@@ -63,7 +63,7 @@ const SignInForm = () => {
     <Dialog onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <button className="font-medium w-full max-w-[300px] py-2 bg-transparent border-[1px] border-[#e7e9ea] text-purple-700 hover:bg-purple-700/10 rounded-full">
-          Sign in
+          Signin as Test User 
         </button>
       </DialogTrigger>
       <DialogContent className="p-5  h-fit flex flex-col">
