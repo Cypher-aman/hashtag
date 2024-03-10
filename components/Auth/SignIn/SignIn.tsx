@@ -77,6 +77,7 @@ const SignInForm = () => {
               <FormField
                 control={form.control}
                 name="email"
+                defaultValue="john.doe@example.com"
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormLabel>Email</FormLabel>
@@ -95,6 +96,7 @@ const SignInForm = () => {
               <FormField
                 control={form.control}
                 name="password"
+                defaultValue="12345"
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormLabel>Password</FormLabel>
