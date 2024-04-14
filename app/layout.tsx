@@ -67,7 +67,7 @@ export default function RootLayout({
         clientId={process.env.NEXT_PUBLIC_GOOGLE_LOGIN_CLIENT_ID as string}
       >
         <QueryClientProvider client={queryClient}>
-          <body className={inter.className}>{children}</body>
+          <body className={`${inter.className} dark`}>{children}</body>
         </QueryClientProvider>
       </GoogleOAuthProvider>
     </html>
